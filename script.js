@@ -11,6 +11,7 @@ let colorMap = {};
 let searchResultsIDs = [];
 let searchPointer = -1;
 let inferredDateOrder = 'DMY';
+let profileObjectUrl = '';
 
 // UI selector
 const $ = (id) => document.getElementById(id);
@@ -37,9 +38,56 @@ window.onload = () => {
     }
 
     if (sidebar && window.innerWidth <= 800) {
-        sidebar.classList.add('active');
+        setSidebarState(true);
     }
 };
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 800) {
+        setSidebarState(false);
+    }
+});
+
+const dateJumpAction = $('date-jump-action');
+if (dateJumpAction) {
+    dateJumpAction.addEventListener('click', handleDateJumpAction);
+}
+
+const dateSheetEl = $('date-sheet');
+const dateSheetInputEl = $('date-sheet-input');
+const dateSheetCancelEl = $('date-sheet-cancel');
+const dateSheetApplyEl = $('date-sheet-apply');
+
+if (dateSheetEl) {
+    dateSheetEl.addEventListener('click', (event) => {
+        if (event.target === dateSheetEl) {
+            closeDateSheet();
+        }
+    });
+}
+
+if (dateSheetCancelEl) {
+    dateSheetCancelEl.addEventListener('click', closeDateSheet);
+}
+
+if (dateSheetApplyEl) {
+    dateSheetApplyEl.addEventListener('click', applyDateSheetSelection);
+}
+
+if (dateSheetInputEl) {
+    dateSheetInputEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            applyDateSheetSelection();
+        }
+    });
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && dateSheetEl && !dateSheetEl.hidden) {
+        closeDateSheet();
+    }
+});
 
 // File input listener
 const fileInputEl = $('file-input');
@@ -86,7 +134,7 @@ async function initViewer() {
     myName = nameInput.value.trim();
 
     if (window.innerWidth <= 800) {
-        toggleSidebar();
+        setSidebarState(false);
     }
 
     const file = fileInput.files[0];
@@ -566,7 +614,23 @@ function closeDrawer(id) {
 
 function toggleSidebar() {
     const sidebar = $('sidebar');
-    if (sidebar) sidebar.classList.toggle('active');
+    if (!sidebar) return;
+
+    const willOpen = !sidebar.classList.contains('active');
+    setSidebarState(willOpen);
+}
+
+function setSidebarState(isOpen) {
+    const sidebar = $('sidebar');
+    const backdrop = $('sidebar-backdrop');
+
+    if (sidebar) {
+        sidebar.classList.toggle('active', isOpen);
+    }
+
+    if (backdrop) {
+        backdrop.classList.toggle('active', isOpen);
+    }
 }
 
 function handleChatSelect() {
@@ -574,7 +638,7 @@ function handleChatSelect() {
 
     const sidebar = $('sidebar');
     if (sidebar?.classList.contains('active')) {
-        sidebar.classList.remove('active');
+        setSidebarState(false);
     }
 }
 
@@ -637,7 +701,12 @@ if (pfpInput) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (profileObjectUrl) {
+            URL.revokeObjectURL(profileObjectUrl);
+        }
+
         const objectUrl = URL.createObjectURL(file);
+        profileObjectUrl = objectUrl;
 
         if ($('my-pfp-img')) $('my-pfp-img').src = objectUrl;
         if ($('drawer-pfp-img')) $('drawer-pfp-img').src = objectUrl;
@@ -683,34 +752,81 @@ function closeMenuOutside(e) {
 
 function closeMenuOnEscape(e) {
     if (e.key === 'Escape') {
+        if (dateSheetEl && !dateSheetEl.hidden) {
+            closeDateSheet();
+            return;
+        }
         closeMenu();
     }
+}
+
+function handleDateJumpAction(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    triggerDateJump();
 }
 
 function triggerDateJump() {
     closeMenu();
 
-    const dateInput = $('date-jumper');
-    if (!dateInput) return;
-
-    // Force change event even when selecting the same date again.
-    dateInput.value = '';
-
-    try {
-        if (typeof dateInput.showPicker === 'function') {
-            dateInput.showPicker();
-        } else {
-            dateInput.focus();
-            dateInput.click();
-        }
-    } catch (error) {
-        console.warn('showPicker failed; using manual prompt fallback', error);
-        const manualDate = prompt('Enter date to jump to (YYYY-MM-DD):');
-        if (manualDate) handleDateSelection(manualDate);
+    if (globalMessages.length === 0) {
+        showToast('Load a chat first');
+        return;
     }
+
+    openDateSheet();
+}
+
+function openDateSheet() {
+    if (!dateSheetEl || !dateSheetInputEl) return;
+
+    dateSheetInputEl.value = '';
+    dateSheetEl.hidden = false;
+    requestAnimationFrame(() => {
+        dateSheetEl.classList.add('open');
+    });
+
+    setTimeout(() => {
+        try {
+            dateSheetInputEl.focus({ preventScroll: true });
+        } catch (error) {
+            // Best effort only.
+        }
+    }, 40);
+}
+
+function closeDateSheet() {
+    if (!dateSheetEl) return;
+
+    dateSheetEl.classList.remove('open');
+    setTimeout(() => {
+        if (!dateSheetEl.classList.contains('open')) {
+            dateSheetEl.hidden = true;
+        }
+    }, 160);
+}
+
+function applyDateSheetSelection() {
+    const selectedDate = dateSheetInputEl?.value || '';
+    if (!selectedDate) {
+        showToast('Select a date');
+        return;
+    }
+
+    closeDateSheet();
+    handleDateSelection(selectedDate);
 }
 
 function handleDateSelection(dateVal) {
+    const dateInput = $('date-jumper');
+    if (dateInput) {
+        dateInput.classList.remove('open');
+    }
+    closeDateSheet();
+
     if (!dateVal || globalMessages.length === 0) return;
 
     const targetDate = new Date(`${dateVal}T00:00:00`);

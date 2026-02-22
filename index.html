@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#111b21">
     <title>Obsidian</title>
     <link rel="stylesheet" href="./style.css">
@@ -180,6 +180,7 @@
             </div>
 
         </aside>
+        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close sidebar" onclick="toggleSidebar()"></button>
 
         <main class="chat-interface">
             <div class="chat-bg"></div>
@@ -198,9 +199,9 @@
                     <div class="menu-container">
                         <button onclick="toggleMenu()"><i class="ph ph-dots-three-vertical"></i></button>
                         <div class="dropdown-menu" id="header-menu">
-                            <div class="menu-item" onclick="triggerDateJump()">
+                            <button type="button" class="menu-item" id="date-jump-action" aria-label="Go to date">
                                 <i class="ph ph-calendar-blank"></i> Go to Date
-                            </div>
+                            </button>
                             <div class="menu-item" onclick="jumpToBottom()">
                                 <i class="ph ph-arrow-down"></i> Jump to Bottom
                             </div>
@@ -208,7 +209,18 @@
                     </div>
                 </div>
 
-               <input type="date" id="date-jumper" style="opacity: 0; position: absolute; width: 1px; height: 1px; bottom: 0; left: 0; pointer-events: none;" onchange="handleDateSelection(this.value)"> 
+               <input type="date" id="date-jumper" class="date-jumper-input" onchange="handleDateSelection(this.value)">
+               <div id="date-sheet" class="date-sheet-backdrop" hidden>
+                    <div class="date-sheet" role="dialog" aria-modal="true" aria-labelledby="date-sheet-title">
+                        <h3 id="date-sheet-title">Go to Date</h3>
+                        <p>Select a date to jump to the closest matching day in chat.</p>
+                        <input type="date" id="date-sheet-input" class="date-sheet-input">
+                        <div class="date-sheet-actions">
+                            <button type="button" class="btn-secondary" id="date-sheet-cancel">Cancel</button>
+                            <button type="button" class="btn-primary" id="date-sheet-apply">Jump</button>
+                        </div>
+                    </div>
+               </div>
             </header>
 
             <div class="search-toolbar" id="search-toolbar">
