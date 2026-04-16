@@ -3,7 +3,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
 Obsidian is a privacy-first WhatsApp export viewer.
-It parses exported `.txt` files (or `.zip` files that contain a `.txt`) directly in your browser and renders a WhatsApp-like chat UI with search and analytics.
+It parses exported `.txt` files (or `.zip` files that contain a `.txt`) directly in your browser and renders a WhatsApp-like chat UI with search, analytics, and inline media support.
 
 ## Privacy
 
@@ -14,20 +14,23 @@ It parses exported `.txt` files (or `.zip` files that contain a `.txt`) directly
 ## Current Features
 
 - Import WhatsApp exports from `.txt` and `.zip`.
-- Robust line parser with multiline message continuation support.
+- Robust line parser with multiline message continuation support, including date separators like `/`, `-`, and `.`.
 - Message list rendering with grouped bubbles and date separators.
+- Inline rendering for images, stickers, videos, audio, and downloadable documents from ZIP exports.
+- Lazy loading for inline images and video so large chats stay smoother.
 - Real-time message search with highlight and up/down navigation.
 - Jump-to-date action from the header menu.
-- Analytics drawer for total message count, media-omitted count, and sender distribution.
+- Analytics drawer for total message count, media count, and sender distribution.
 - Dark/light theme toggle.
+- Loading overlay and disabled actions while parsing to prevent accidental double loads.
 - Responsive desktop/mobile layout.
 
 ## Limitations
 
-- Media files are not rendered inline from export text.
-- Missing attachments are shown as `[Media omitted]`.
+- Missing attachments are shown clearly when the export references a file that is not present in the ZIP.
 - Date-jump accuracy depends on date markers and locale format in the export.
-- Voice note/audio playback is not implemented.
+- Very uncommon localized export phrases may still need additional parser rules.
+- Extremely large exports can still take time to parse because everything is processed locally in-browser.
 
 ## Quick Start
 
@@ -65,6 +68,11 @@ Then open `http://localhost:8080`.
 - External links are opened with `rel="noopener noreferrer"`.
 - Search query regex is escaped to prevent invalid regex crashes.
 - Menu interactions and date-jump fallbacks handle older browser behavior.
+- German exports using dates like `01.04.26` and attachment labels like `Datei angehängt` are supported.
+
+## Community Credit
+
+- German export parsing and attachment-label feedback came from Reddit user `u/jacckyryan`.
 
 ## Contributing
 

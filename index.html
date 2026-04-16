@@ -6,90 +6,93 @@
     <meta name="theme-color" content="#111b21">
     <title>Obsidian</title>
     <link rel="stylesheet" href="./style.css">
-    <script src="./script.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="./script.js" defer></script>
 </head>
 <body class="dark-theme">
-
-    <div id="loader">
+    <div id="loader" aria-hidden="true">
         <div class="loader-content">
-            <i class="ph-fill ph-whatsapp-logo" style="font-size: 64px; color: #00a884;"></i>
-            <div class="progress-bar"><div class="fill"></div></div>
+            <i class="ph-fill ph-whatsapp-logo loader-logo"></i>
+            <div class="progress-bar" aria-hidden="true"><div class="fill"></div></div>
             <p><i class="ph-fill ph-lock-key"></i> End-to-end encrypted</p>
         </div>
     </div>
 
     <div class="app-layout">
-        
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar" aria-label="Sidebar">
             <header class="sidebar-header">
-                <div class="profile-thumb" onclick="openDrawer('profile')" title="My Profile">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" id="my-pfp-img" alt="Me">
-                </div>
+                <button class="profile-thumb profile-button" id="open-profile" type="button" title="My Profile" aria-label="Open profile">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" id="my-pfp-img" alt="Your profile picture">
+                </button>
                 <div class="sidebar-nav">
-                    <button onclick="openDrawer('stats')" title="Analytics"><i class="ph ph-chart-pie-slice"></i></button>
-                    <button onclick="openDrawer('info')" title="App Info"><i class="ph ph-info"></i></button>
-                    <button onclick="toggleTheme()" title="Toggle Theme"><i class="ph ph-moon-stars"></i></button>
+                    <button id="open-stats" type="button" title="Analytics" aria-label="Open analytics"><i class="ph ph-chart-pie-slice"></i></button>
+                    <button id="open-info" type="button" title="App Info" aria-label="Open app info"><i class="ph ph-info"></i></button>
+                    <button id="theme-toggle" type="button" title="Toggle Theme" aria-label="Toggle theme"><i class="ph ph-moon-stars"></i></button>
                 </div>
             </header>
 
             <div class="sidebar-content">
-                <div class="upload-state" id="upload-panel">
+                <section class="upload-state" id="upload-panel">
                     <div class="brand-hero">
-                        <h2>Obsidian</h2>
+                        <h1>Obsidian</h1>
                         <span>WhatsApp Viewer</span>
                     </div>
 
                     <div class="input-wrapper">
-                        <label>Display Name</label>
-                        <input type="text" id="display-name" placeholder="Exact name in chat (e.g. Paras)">
+                        <label for="display-name">Display Name</label>
+                        <input type="text" id="display-name" placeholder="Exact name in chat (e.g. Paras)" autocomplete="name">
                     </div>
 
-                    <div class="drop-target" id="drop-target">
-                        <i class="ph ph-file-arrow-up"></i>
+                    <button class="drop-target" id="drop-target" type="button" aria-describedby="drop-help">
+                        <i class="ph ph-file-arrow-up" aria-hidden="true"></i>
                         <p>Drop <strong>.txt</strong> or <strong>.zip</strong></p>
+                        <span id="drop-help" class="sr-only">Choose a WhatsApp export text file or a ZIP with media.</span>
                         <input type="file" id="file-input" accept=".txt,.zip" hidden>
-                        <button class="btn-secondary" onclick="document.getElementById('file-input').click()">Browse</button>
+                        <span class="btn-secondary">Browse</span>
+                    </button>
+
+                    <button class="btn-primary" id="load-chat" type="button">Load Chat</button>
+
+                    <div class="load-hint" id="load-hint">
+                        Large ZIP exports can take a moment. Obsidian will stay responsive and block duplicate loads while parsing.
                     </div>
 
-                    <button class="btn-primary" onclick="initViewer()">Load Chat</button>
-                    
                     <div class="privacy-pill">
                         <i class="ph-fill ph-shield-check"></i> Processed 100% Locally
                     </div>
-                </div>
+                </section>
 
-                <div class="chat-list hidden" id="chat-list-panel">
+                <section class="chat-list hidden" id="chat-list-panel" aria-label="Loaded chat">
                     <div class="search-bar-sidebar">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Search chats" disabled>
+                        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+                        <input type="text" placeholder="Search chats" disabled aria-label="Search chats">
                     </div>
-                    <div class="chat-item active" onclick="handleChatSelect()">
-                        <div class="chat-item-avatar"></div>
+                    <button class="chat-item active" id="chat-list-item" type="button">
+                        <div class="chat-item-avatar" aria-hidden="true"></div>
                         <div class="chat-item-info">
                             <h4 id="sidebar-title">Chat History</h4>
                             <span id="sidebar-sub">Active now</span>
                         </div>
-                    </div>
-                </div>
+                    </button>
+                </section>
             </div>
 
-            <div class="sidebar-footer">
+            <footer class="sidebar-footer">
                 <p>Created by <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer">Paras Sharma</a></p>
-            </div>
+            </footer>
 
-            <div class="drawer" id="profile-drawer">
+            <section class="drawer" id="profile-drawer" aria-label="Profile drawer">
                 <div class="drawer-header">
-                    <button onclick="closeDrawer('profile')"><i class="ph ph-arrow-left"></i></button>
-                    <h3>Profile</h3>
+                    <button class="drawer-close" data-drawer-close="profile" type="button" aria-label="Close profile"><i class="ph ph-arrow-left"></i></button>
+                    <h2>Profile</h2>
                 </div>
                 <div class="drawer-scroll">
                     <div class="profile-hero">
-                        <div class="large-avatar" onclick="document.getElementById('pfp-upload').click()">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" id="drawer-pfp-img">
-                            <div class="overlay"><i class="ph ph-camera"></i></div>
-                        </div>
+                        <button class="large-avatar avatar-upload-trigger" id="open-pfp-upload" type="button" aria-label="Change profile picture">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" id="drawer-pfp-img" alt="Profile preview">
+                            <span class="overlay"><i class="ph ph-camera"></i></span>
+                        </button>
                         <input type="file" id="pfp-upload" hidden accept="image/*">
                         <h2>Paras Sharma</h2>
                         <p>Human before all else.</p>
@@ -100,7 +103,7 @@
                         <p class="support-text">If you like this tool, consider buying me a coffee.</p>
                         <div class="upi-display">
                             <span>paras2326@fam</span>
-                            <button onclick="copyUPI()"><i class="ph ph-copy"></i></button>
+                            <button id="copy-upi" type="button" aria-label="Copy UPI ID"><i class="ph ph-copy"></i></button>
                         </div>
                         <div class="qr-frame">
                             <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=paras2326@fam&pn=Paras%20Sharma&cu=INR" alt="UPI QR">
@@ -108,12 +111,12 @@
                         <p class="secure-badge"><i class="ph-fill ph-shield-check"></i> Verified UPI</p>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="drawer" id="stats-drawer">
+            <section class="drawer" id="stats-drawer" aria-label="Analytics drawer">
                 <div class="drawer-header">
-                    <button onclick="closeDrawer('stats')"><i class="ph ph-arrow-left"></i></button>
-                    <h3>Analytics</h3>
+                    <button class="drawer-close" data-drawer-close="stats" type="button" aria-label="Close analytics"><i class="ph ph-arrow-left"></i></button>
+                    <h2>Analytics</h2>
                 </div>
                 <div class="drawer-scroll">
                     <div class="stats-overview">
@@ -126,47 +129,64 @@
                             <span class="label">Media</span>
                         </div>
                     </div>
-                    
+
                     <div class="section-label">ACTIVITY BREAKDOWN</div>
                     <div class="stats-list" id="stats-list"></div>
                 </div>
-            </div>
+            </section>
 
-            <div class="drawer" id="info-drawer">
+            <section class="drawer" id="info-drawer" aria-label="App info drawer">
                 <div class="drawer-header">
-                    <button onclick="closeDrawer('info')"><i class="ph ph-arrow-left"></i></button>
-                    <h3>App Info</h3>
+                    <button class="drawer-close" data-drawer-close="info" type="button" aria-label="Close app info"><i class="ph ph-arrow-left"></i></button>
+                    <h2>App Info</h2>
                 </div>
                 <div class="drawer-scroll">
                     <div class="info-block">
-                        <h4>About Obsidian</h4>
-                        <p>Obsidian is a privacy-first WhatsApp chat viewer. It transforms exported <code class="inline-code">.txt</code> and <code class="inline-code">.zip</code> files into a clean, searchable, and responsive interface.</p>
+                        <h3>About Obsidian</h3>
+                        <p>Obsidian is a privacy-first WhatsApp chat viewer. It turns exported chats into a familiar interface with search, analytics, and proper media playback while keeping everything in your browser.</p>
                     </div>
 
                     <div class="info-block">
-                        <h4>Capabilities</h4>
+                        <h3>Capabilities</h3>
                         <ul class="feature-list">
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally, including multiline messages.</li>
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Search + Navigation:</strong> Real-time search with highlighted matches and up/down result navigation.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally, including multiline messages and common system entries.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Inline Media:</strong> Renders images, videos, audio, stickers, and downloadable documents from ZIP exports.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Search + Navigation:</strong> Real-time search with highlighted matches and quick result navigation.</li>
                             <li><i class="ph-fill ph-check-circle"></i> <strong>Date Jump:</strong> Jump directly to a selected date from the chat menu.</li>
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Analytics:</strong> View message totals, media-omitted count, and per-sender share.</li>
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Theming:</strong> Toggle between Dark and Light modes.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Analytics:</strong> View totals, media usage, and per-sender share.</li>
                         </ul>
                     </div>
 
                     <div class="info-block">
-                        <h4>Limitations</h4>
-                        <ul class="feature-list warning">
-                            <li><i class="ph-fill ph-warning-circle"></i> <strong>Media:</strong> Exported media binaries are not rendered inline. Missing attachments are shown as <code class="inline-code">[Media omitted]</code>.</li>
-                            <li><i class="ph-fill ph-warning-circle"></i> <strong>Date Formats:</strong> Date jump relies on date markers present in export text and can vary by locale format.</li>
-                            <li><i class="ph-fill ph-warning-circle"></i> <strong>Voice Notes:</strong> Audio playback is not currently supported.</li>
+                        <h3>Notes</h3>
+                        <ul class="feature-list">
+                            <li><i class="ph-fill ph-info"></i> ZIP exports with attachments give the best experience because files can be matched and previewed inline.</li>
+                            <li><i class="ph-fill ph-info"></i> Date parsing adapts to different export formats, but malformed exports can still affect jump accuracy.</li>
+                            <li><i class="ph-fill ph-info"></i> Media that is missing from the export is still shown clearly so gaps are obvious.</li>
                         </ul>
                     </div>
 
                     <div class="info-block">
-                        <h4>How it Works</h4>
-                        <p>This tool uses the <strong>File Reader API</strong> to process your chat export entirely within your browser memory. No data is ever uploaded to a server.</p>
+                        <h3>Current Limitations</h3>
+                        <ul class="feature-list">
+                            <li><i class="ph-fill ph-warning-circle"></i> <strong>Memory Limits:</strong> Because processing happens entirely on your device, very large ZIP exports (usually >500MB) can exceed your browser's RAM limit and crash the tab. For massive histories, exporting "Without Media" is heavily recommended.</li>
+                            <li><i class="ph-fill ph-warning-circle"></i> Very rare localized WhatsApp system phrases may still need parser updates.</li>
+                            <li><i class="ph-fill ph-warning-circle"></i> Date jump relies on export date markers, so broken or heavily edited logs can reduce accuracy.</li>
+                            <li><i class="ph-fill ph-warning-circle"></i> Attachments can only render inline when the referenced files are included in the ZIP export.</li>
+                        </ul>
                     </div>
+
+                    <div class="info-block">
+                        <h3>Community Credit</h3>
+                        <p>German export support and attachment-matching improvements were sharpened with feedback from <strong>u/jacckyryan</strong> on Reddit.</p>
+                    </div>
+
+                    <div class="info-block">
+                        <h3>How it Works</h3>
+                        <p>Obsidian uses the browser's native File Reader API and in-memory ZIP parsing to process your export entirely on-device. When you load a file, the script reads the raw text, uses regular expressions to identify message boundaries and timestamps, and dynamically builds a chat interface in batches to keep scrolling smooth.</p>
+                        <p style="margin-top: 10px;">For ZIP files, it extracts media into your browser's temporary memory by creating "Blob URLs", allowing images and videos to display inline without ever touching a server. Because nothing is uploaded, your privacy is guaranteed. Once you close or refresh the tab, all chat data is instantly wiped from memory.</p>
+                    </div>
+
                     <div class="section-label">SOURCE AVAILABLE</div>
                     <a href="https://github.com/parassharma2306/obsidian" target="_blank" rel="noopener noreferrer" class="repo-card">
                         <i class="ph-fill ph-github-logo"></i>
@@ -177,40 +197,40 @@
                         <i class="ph ph-arrow-square-out"></i>
                     </a>
                 </div>
-            </div>
-
+            </section>
         </aside>
-        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close sidebar" onclick="toggleSidebar()"></button>
+
+        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close sidebar"></button>
 
         <main class="chat-interface">
-            <div class="chat-bg"></div>
-            
+            <div class="chat-bg" aria-hidden="true"></div>
+
             <header class="chat-header">
-                <button class="mobile-menu" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
+                <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open sidebar"><i class="ph ph-list"></i></button>
                 <div class="header-profile">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="header-pfp">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="header-pfp" alt="Chat avatar">
                     <div class="header-info">
-                        <h3 id="header-name">Welcome</h3>
+                        <h2 id="header-name">Welcome</h2>
                         <p id="header-meta">Obsidian</p>
                     </div>
                 </div>
                 <div class="header-tools">
-                    <button onclick="toggleSearch()"><i class="ph ph-magnifying-glass"></i></button>
+                    <button id="search-toggle" type="button" aria-label="Search messages"><i class="ph ph-magnifying-glass"></i></button>
                     <div class="menu-container">
-                        <button onclick="toggleMenu()"><i class="ph ph-dots-three-vertical"></i></button>
+                        <button id="menu-toggle" type="button" aria-label="Open chat menu"><i class="ph ph-dots-three-vertical"></i></button>
                         <div class="dropdown-menu" id="header-menu">
                             <button type="button" class="menu-item" id="date-jump-action" aria-label="Go to date">
                                 <i class="ph ph-calendar-blank"></i> Go to Date
                             </button>
-                            <div class="menu-item" onclick="jumpToBottom()">
+                            <button type="button" class="menu-item" id="jump-bottom-action">
                                 <i class="ph ph-arrow-down"></i> Jump to Bottom
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-               <input type="date" id="date-jumper" class="date-jumper-input" onchange="handleDateSelection(this.value)">
-               <div id="date-sheet" class="date-sheet-backdrop" hidden>
+                <input type="date" id="date-jumper" class="date-jumper-input">
+                <div id="date-sheet" class="date-sheet-backdrop" hidden>
                     <div class="date-sheet" role="dialog" aria-modal="true" aria-labelledby="date-sheet-title">
                         <h3 id="date-sheet-title">Go to Date</h3>
                         <p>Select a date to jump to the closest matching day in chat.</p>
@@ -220,43 +240,67 @@
                             <button type="button" class="btn-primary" id="date-sheet-apply">Jump</button>
                         </div>
                     </div>
-               </div>
+                </div>
             </header>
 
-            <div class="search-toolbar" id="search-toolbar">
+            <section class="search-toolbar" id="search-toolbar">
                 <div class="search-input-group">
-                    <button onclick="toggleSearch()"><i class="ph ph-arrow-left"></i></button>
-                    <input type="text" id="live-search" placeholder="Search messages..." oninput="handleSearch(this.value)">
+                    <button id="search-close" type="button" aria-label="Close search"><i class="ph ph-arrow-left"></i></button>
+                    <input type="text" id="live-search" placeholder="Search messages..." autocomplete="off">
                 </div>
                 <div class="search-nav">
-                    <span id="search-counter"></span>
-                    <button onclick="navSearch('up')"><i class="ph ph-caret-up"></i></button>
-                    <button onclick="navSearch('down')"><i class="ph ph-caret-down"></i></button>
+                    <span id="search-counter" aria-live="polite"></span>
+                    <button id="search-up" type="button" aria-label="Previous result"><i class="ph ph-caret-up"></i></button>
+                    <button id="search-down" type="button" aria-label="Next result"><i class="ph ph-caret-down"></i></button>
                 </div>
-            </div>
+            </section>
 
-            <div class="messages-viewport" id="viewport">
+            <section class="messages-viewport" id="viewport" aria-label="Messages">
                 <div class="empty-placeholder" id="empty-state">
                     <div class="illustration">
                         <i class="ph-duotone ph-chat-teardrop-text"></i>
                     </div>
-                    <h1>Obsidian</h1>
-                    <p>Load a chat file to view history, stats, and more.<br>Secure. Fast. Mobile-Ready.</p>
+                    <h2>Obsidian</h2>
+                    <p>Load a chat file to view history, media, stats, and more.<br>Secure. Fast. Mobile-ready.</p>
                 </div>
-                
-                <div class="message-list" id="message-list"></div>
-            </div>
 
-            <footer class="chat-footer">
-                <button><i class="ph ph-smiley"></i></button>
-                <button><i class="ph ph-plus"></i></button>
+                <div class="message-list" id="message-list"></div>
+            </section>
+
+            <footer class="chat-footer" aria-label="Chat composer preview">
+                <button type="button" aria-label="Emoji picker"><i class="ph ph-smiley"></i></button>
+                <button type="button" aria-label="Add attachment"><i class="ph ph-plus"></i></button>
                 <div class="fake-input">Type a message</div>
-                <button><i class="ph ph-microphone"></i></button>
+                <button type="button" aria-label="Record voice note"><i class="ph ph-microphone"></i></button>
             </footer>
         </main>
-        
-        <div id="toast">Copied to Clipboard</div>
+
+        <div class="media-modal" id="media-modal" hidden>
+            <button class="media-modal-backdrop" id="media-modal-backdrop" type="button" aria-label="Close media preview"></button>
+            <div class="media-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="media-modal-title">
+                <div class="media-modal-header">
+                    <div>
+                        <h2 id="media-modal-title">Media Preview</h2>
+                        <p id="media-modal-subtitle"></p>
+                    </div>
+                    <div class="media-modal-actions">
+                        <a id="media-download-link" class="btn-secondary media-download" href="#" download>Download</a>
+                        <button id="media-modal-close" type="button" aria-label="Close media preview"><i class="ph ph-x"></i></button>
+                    </div>
+                </div>
+                <div class="media-modal-body" id="media-modal-body"></div>
+            </div>
+        </div>
+
+        <div class="processing-overlay" id="processing-overlay" hidden>
+            <div class="processing-card" role="status" aria-live="polite">
+                <i class="ph-fill ph-spinner-gap processing-spinner"></i>
+                <h2 id="processing-title">Loading chat</h2>
+                <p id="processing-copy">Parsing your export locally. This can take a moment for large ZIP files.</p>
+            </div>
+        </div>
+
+        <div id="toast" aria-live="polite">Copied to Clipboard</div>
     </div>
 </body>
 </html>
-
