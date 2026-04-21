@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#111b21">
-    <title>Obsidian</title>
+    <title>Obsidian WA Viewer</title>
+    <meta name="description" content="Privacy-First WhatsApp Analytics Tool. View and analyze your exported chats locally with Obsidian WA Viewer.">
+    <meta name="keywords" content="WhatsApp Viewer, WhatsApp Analytics, Chat Export Viewer, Privacy First, Obsidian WA Viewer">
     <link rel="stylesheet" href="./style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="./script.js" defer></script>
 </head>
 <body class="dark-theme">
@@ -15,7 +18,7 @@
         <div class="loader-content">
             <i class="ph-fill ph-whatsapp-logo loader-logo"></i>
             <div class="progress-bar" aria-hidden="true"><div class="fill"></div></div>
-            <p><i class="ph-fill ph-lock-key"></i> End-to-end encrypted</p>
+            <p><i class="ph-fill ph-shield-check"></i> 100% Local Processing</p>
         </div>
     </div>
 
@@ -35,8 +38,8 @@
             <div class="sidebar-content">
                 <section class="upload-state" id="upload-panel">
                     <div class="brand-hero">
-                        <h1>Obsidian</h1>
-                        <span>WhatsApp Viewer</span>
+                        <h1>Obsidian WA Viewer</h1>
+                        <span>WhatsApp Analytics</span>
                     </div>
 
                     <div class="input-wrapper">
@@ -55,11 +58,11 @@
                     <button class="btn-primary" id="load-chat" type="button">Load Chat</button>
 
                     <div class="load-hint" id="load-hint">
-                        Large ZIP exports can take a moment. Obsidian will stay responsive and block duplicate loads while parsing.
+                        Your Data Never Leaves Your Device. Large ZIP exports can take a moment to parse.
                     </div>
 
                     <div class="privacy-pill">
-                        <i class="ph-fill ph-shield-check"></i> Processed 100% Locally
+                        <i class="ph-fill ph-shield-check"></i> 100% Local Processing. No Uploads. No Tracking.
                     </div>
                 </section>
 
@@ -119,6 +122,12 @@
                     <h2>Analytics</h2>
                 </div>
                 <div class="drawer-scroll">
+                    <div class="wrapped-card">
+                        <h3>Obsidian Wrapped ✨</h3>
+                        <p>Generate a beautiful infographic of your chat personality and trends!</p>
+                        <button class="btn-wrapped" id="generate-wrapped">Generate Wrapped</button>
+                    </div>
+
                     <div class="stats-overview">
                         <div class="stat-box">
                             <span class="val" id="stat-total">0</span>
@@ -129,6 +138,10 @@
                             <span class="label">Media</span>
                         </div>
                     </div>
+
+                    <div class="section-label">EMOJI INSIGHTS</div>
+                    <div class="emoji-grid" id="emoji-grid">
+                        </div>
 
                     <div class="section-label">ACTIVITY BREAKDOWN</div>
                     <div class="stats-list" id="stats-list"></div>
@@ -142,17 +155,17 @@
                 </div>
                 <div class="drawer-scroll">
                     <div class="info-block">
-                        <h3>About Obsidian</h3>
-                        <p>Obsidian is a privacy-first WhatsApp chat viewer. It turns exported chats into a familiar interface with search, analytics, and proper media playback while keeping everything in your browser.</p>
+                        <h3>About Obsidian WA Viewer</h3>
+                        <p>Obsidian is a privacy-first WhatsApp chat viewer and analytics tool. It turns exported chats into a familiar interface with deep analytics, maintaining 100% processing in your browser.</p>
                     </div>
 
                     <div class="info-block">
                         <h3>Capabilities</h3>
                         <ul class="feature-list">
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally, including multiline messages and common system entries.</li>
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Inline Media:</strong> Renders images, videos, audio, stickers, and downloadable documents from ZIP exports.</li>
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Search + Navigation:</strong> Real-time search with highlighted matches and quick result navigation.</li>
-                            <li><i class="ph-fill ph-check-circle"></i> <strong>Date Jump:</strong> Jump directly to a selected date from the chat menu.</li>
+                            <li><i class="ph-fill ph-shield-check"></i> <strong>Zero Data Transfer:</strong> No uploads, no servers, completely private.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Inline Media:</strong> Renders images, videos, audio from ZIP exports.</li>
+                            <li><i class="ph-fill ph-check-circle"></i> <strong>Obsidian Wrapped:</strong> Extract emojis and hourly patterns to generate a personalized graphic.</li>
                             <li><i class="ph-fill ph-check-circle"></i> <strong>Analytics:</strong> View totals, media usage, and per-sender share.</li>
                         </ul>
                     </div>
@@ -160,42 +173,10 @@
                     <div class="info-block">
                         <h3>Notes</h3>
                         <ul class="feature-list">
-                            <li><i class="ph-fill ph-info"></i> ZIP exports with attachments give the best experience because files can be matched and previewed inline.</li>
-                            <li><i class="ph-fill ph-info"></i> Date parsing adapts to different export formats, but malformed exports can still affect jump accuracy.</li>
-                            <li><i class="ph-fill ph-info"></i> Media that is missing from the export is still shown clearly so gaps are obvious.</li>
+                            <li><i class="ph-fill ph-info"></i> ZIP exports with attachments give the best experience.</li>
+                            <li><i class="ph-fill ph-warning-circle"></i> For massive histories, exporting "Without Media" avoids browser memory crashes.</li>
                         </ul>
                     </div>
-
-                    <div class="info-block">
-                        <h3>Current Limitations</h3>
-                        <ul class="feature-list">
-                            <li><i class="ph-fill ph-warning-circle"></i> <strong>Memory Limits:</strong> Because processing happens entirely on your device, very large ZIP exports (usually >500MB) can exceed your browser's RAM limit and crash the tab. For massive histories, exporting "Without Media" is heavily recommended.</li>
-                            <li><i class="ph-fill ph-warning-circle"></i> Very rare localized WhatsApp system phrases may still need parser updates.</li>
-                            <li><i class="ph-fill ph-warning-circle"></i> Date jump relies on export date markers, so broken or heavily edited logs can reduce accuracy.</li>
-                            <li><i class="ph-fill ph-warning-circle"></i> Attachments can only render inline when the referenced files are included in the ZIP export.</li>
-                        </ul>
-                    </div>
-
-                    <div class="info-block">
-                        <h3>Community Credit</h3>
-                        <p>German export support and attachment-matching improvements were sharpened with feedback from <strong>u/jacckyryan</strong> on Reddit.</p>
-                    </div>
-
-                    <div class="info-block">
-                        <h3>How it Works</h3>
-                        <p>Obsidian uses the browser's native File Reader API and in-memory ZIP parsing to process your export entirely on-device. When you load a file, the script reads the raw text, uses regular expressions to identify message boundaries and timestamps, and dynamically builds a chat interface in batches to keep scrolling smooth.</p>
-                        <p style="margin-top: 10px;">For ZIP files, it extracts media into your browser's temporary memory by creating "Blob URLs", allowing images and videos to display inline without ever touching a server. Because nothing is uploaded, your privacy is guaranteed. Once you close or refresh the tab, all chat data is instantly wiped from memory.</p>
-                    </div>
-
-                    <div class="section-label">SOURCE AVAILABLE</div>
-                    <a href="https://github.com/parassharma2306/obsidian" target="_blank" rel="noopener noreferrer" class="repo-card">
-                        <i class="ph-fill ph-github-logo"></i>
-                        <div>
-                            <strong>View on GitHub</strong>
-                            <span>Star the repository</span>
-                        </div>
-                        <i class="ph ph-arrow-square-out"></i>
-                    </a>
                 </div>
             </section>
         </aside>
@@ -211,7 +192,7 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="header-pfp" alt="Chat avatar">
                     <div class="header-info">
                         <h2 id="header-name">Welcome</h2>
-                        <p id="header-meta">Obsidian</p>
+                        <p id="header-meta">Obsidian WA Viewer</p>
                     </div>
                 </div>
                 <div class="header-tools">
@@ -260,7 +241,7 @@
                     <div class="illustration">
                         <i class="ph-duotone ph-chat-teardrop-text"></i>
                     </div>
-                    <h2>Obsidian</h2>
+                    <h2>Obsidian WA Viewer</h2>
                     <p>Load a chat file to view history, media, stats, and more.<br>Secure. Fast. Mobile-ready.</p>
                 </div>
 
@@ -289,6 +270,57 @@
                     </div>
                 </div>
                 <div class="media-modal-body" id="media-modal-body"></div>
+            </div>
+        </div>
+
+        <div class="media-modal" id="wrapped-modal" hidden>
+            <button class="media-modal-backdrop" id="wrapped-modal-backdrop" type="button" aria-label="Close Wrapped Prompt"></button>
+            <div class="media-modal-dialog" style="max-width: 450px;" role="dialog" aria-modal="true">
+                <div class="media-modal-header">
+                    <div>
+                        <h2>Your Obsidian Wrapped</h2>
+                        <p>Save and share your chat personality.</p>
+                    </div>
+                    <div class="media-modal-actions">
+                        <button id="close-wrapped" type="button"><i class="ph ph-x"></i></button>
+                    </div>
+                </div>
+                <div class="media-modal-body" style="display:block; padding: 20px; background: var(--bg-sidebar);">
+                    
+                    <div id="wrapped-graphic" class="wrapped-graphic-container">
+                        <div class="wg-header">
+                            <h2>Obsidian Wrapped</h2>
+                            <p id="wg-chat-title">Chat Name</p>
+                        </div>
+                        <div class="wg-stats">
+                            <div class="wg-stat-card">
+                                <span>Total Messages</span>
+                                <h3 id="wg-total-msgs">0</h3>
+                            </div>
+                            <div class="wg-stat-card">
+                                <span>Peak Time</span>
+                                <h3 id="wg-peak-time">12 PM</h3>
+                            </div>
+                        </div>
+                        <div class="wg-top-emojis">
+                            <span>Top Emojis</span>
+                            <div class="wg-emoji-list" id="wg-emojis">
+                                </div>
+                        </div>
+                        <div class="wg-split">
+                            <span>Chat Split</span>
+                            <div class="wg-split-bar" id="wg-split-bar"></div>
+                            <div class="wg-split-labels" id="wg-split-labels"></div>
+                        </div>
+                        <div class="wg-footer">
+                            Generated securely by Obsidian WA Viewer
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" id="download-wrapped" style="width: 100%; margin-top: 20px;">
+                        <i class="ph ph-download-simple" style="margin-right: 8px;"></i> Download Image
+                    </button>
+                </div>
             </div>
         </div>
 

@@ -12,6 +12,8 @@ const state = {
     renderRange: { start: 0, end: 0 },
     colorMap: {},
     senderStats: {},
+    emojiStats: {},
+    hourlyStats: Array(24).fill(0),
     mediaCount: 0,
     mediaStore: new Map(),
     mediaLookup: new Map(),
@@ -38,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     applySavedTheme();
     runLoader();
 
-    // Force the sidebar menu to open by default on mobile screens
     if (window.innerWidth <= 800) {
         setSidebarState(true);
     }
@@ -96,6 +97,27 @@ function bindUI() {
             initViewer();
         }
     });
+
+    // Obsidian Wrapped UI Bindings (Graphic Overwrite)
+    $("generate-wrapped")?.addEventListener("click", () => {
+        if (state.messageOnlyCount === 0) {
+            showToast("Load a chat first to generate Wrapped!");
+            return;
+        }
+        populateWrappedGraphic();
+        $("wrapped-modal").hidden = false;
+        requestAnimationFrame(() => $("wrapped-modal").classList.add("open"));
+    });
+
+    $("download-wrapped")?.addEventListener("click", downloadWrappedGraphic);
+
+    $("close-wrapped")?.addEventListener("click", () => {
+        const modal = $("wrapped-modal");
+        modal.classList.remove("open");
+        window.setTimeout(() => modal.hidden = true, 120);
+    });
+
+    $("wrapped-modal-backdrop")?.addEventListener("click", () => $("close-wrapped").click());
 
     document.querySelectorAll("[data-drawer-close]").forEach((button) => {
         button.addEventListener("click", () => closeDrawer(button.dataset.drawerClose));
@@ -229,13 +251,11 @@ async function initViewer() {
 
     state.myName = displayName;
     
-    // Specifically warn the user if it's a ZIP file since unzipping takes the longest
     const isZip = file.name.toLowerCase().endsWith(".zip");
     const initText = isZip ? "Unzipping and extracting media into memory... This might take a minute for large files." : "Reading text file...";
     
     setLoadingState(true, `Loading ${file.name}`, initText);
     
-    // DOUBLE YIELD: Guarantees the browser paints the loading screen BEFORE JSZip freezes the computer
     await new Promise(resolve => requestAnimationFrame(resolve));
     await new Promise(resolve => setTimeout(resolve, 60));
 
@@ -255,7 +275,6 @@ async function initViewer() {
                 : "Parsing messages..."
         );
         
-        // YIELD again to show the "Matched X attachments" text
         await new Promise(resolve => setTimeout(resolve, 30));
         
         buildMediaStore(attachments);
@@ -332,6 +351,8 @@ function resetChatState() {
     state.messageOnlyCount = 0;
     state.colorMap = {};
     state.senderStats = {};
+    state.emojiStats = {};
+    state.hourlyStats = Array(24).fill(0);
     state.mediaCount = 0;
     state.mediaMissingCount = 0;
     state.searchResults = [];
@@ -341,6 +362,7 @@ function resetChatState() {
     disconnectMediaObserver();
     updateSearchCounter();
     $("message-list").innerHTML = "";
+    $("emoji-grid").innerHTML = "";
 }
 
 function cleanupMediaStore() {
@@ -376,7 +398,7 @@ function buildMediaStore(attachments) {
             ext: mediaType.ext,
             size: attachment.blob.size,
             url: objectUrl,
-            hasLoaded: false // State persistence for lazy loading
+            hasLoaded: false
         };
 
         state.mediaStore.set(id, media);
@@ -396,6 +418,27 @@ function buildMediaStore(attachments) {
     });
 }
 
+// Analytics Extractor Functions
+function extractHour(rawTime) {
+    const timeStr = extractTimePart(rawTime);
+    const match = timeStr.match(/(\d{1,2}):\d{2}(?::\d{2})?\s?([APap][Mm])?/);
+    if (!match) return 0;
+    let hour = parseInt(match[1], 10);
+    const ampm = match[2] ? match[2].toLowerCase() : null;
+    if (ampm === 'pm' && hour < 12) hour += 12;
+    if (ampm === 'am' && hour === 12) hour = 0;
+    return hour % 24;
+}
+
+function trackEmojis(text) {
+    const emojis = text.match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu);
+    if (emojis) {
+        emojis.forEach(e => {
+            state.emojiStats[e] = (state.emojiStats[e] || 0) + 1;
+        });
+    }
+}
+
 function createMessageEntry(index, rawTime, sender, rawContent) {
     const message = {
         type: "msg",
@@ -412,7 +455,12 @@ function createMessageEntry(index, rawTime, sender, rawContent) {
     message.text = parsed.text;
     message.mediaItems = parsed.mediaItems;
 
+    // Track analytics
     state.senderStats[sender] = (state.senderStats[sender] || 0) + 1;
+    const hour = extractHour(rawTime);
+    state.hourlyStats[hour] += 1;
+    trackEmojis(rawContent);
+
     state.messageOnlyCount += 1;
     state.mediaCount += parsed.mediaItems.length;
     state.mediaMissingCount += parsed.mediaItems.filter((item) => item.status === "missing").length;
@@ -497,23 +545,121 @@ function generateStats() {
     $("stat-media").innerText = state.mediaCount.toLocaleString();
 
     const list = $("stats-list");
-    if (!list) return;
+    if (list) {
+        const sorted = Object.entries(state.senderStats).sort((a, b) => b[1] - a[1]);
+        list.innerHTML = sorted.map(([name, count]) => {
+            const pct = state.messageOnlyCount ? ((count / state.messageOnlyCount) * 100).toFixed(1) : "0.0";
+            return `
+                <div class="stat-row">
+                    <div class="stat-header">
+                        <span class="stat-name">${escapeHtml(name)}</span>
+                        <span class="stat-pct">${pct}% (${count})</span>
+                    </div>
+                    <div class="progress-bg">
+                        <div class="progress-val" style="width:${pct}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
 
-    const sorted = Object.entries(state.senderStats).sort((a, b) => b[1] - a[1]);
-    list.innerHTML = sorted.map(([name, count]) => {
-        const pct = state.messageOnlyCount ? ((count / state.messageOnlyCount) * 100).toFixed(1) : "0.0";
-        return `
-            <div class="stat-row">
-                <div class="stat-header">
-                    <span class="stat-name">${escapeHtml(name)}</span>
-                    <span class="stat-pct">${pct}% (${count})</span>
+    const grid = $("emoji-grid");
+    if (grid) {
+        const sortedEmojis = Object.entries(state.emojiStats).sort((a, b) => b[1] - a[1]);
+        const top12 = sortedEmojis.slice(0, 12);
+        
+        if(top12.length === 0) {
+            grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; font-size: 13px; color: var(--text-secondary);">No emojis found yet.</p>`;
+        } else {
+            grid.innerHTML = top12.map(([emoji, count]) => `
+                <div class="emoji-item">
+                    <span class="emoji-char">${emoji}</span>
+                    <span class="emoji-count">${count.toLocaleString()}</span>
                 </div>
-                <div class="progress-bg">
-                    <div class="progress-val" style="width:${pct}%"></div>
-                </div>
-            </div>
-        `;
-    }).join("");
+            `).join("");
+        }
+    }
+}
+
+// Visual Wrapper Logic
+function populateWrappedGraphic() {
+    const total = state.messageOnlyCount;
+    $("wg-chat-title").innerText = state.chatTitle || "Chat History";
+    $("wg-total-msgs").innerText = total.toLocaleString();
+
+    // Peak Time
+    let peakHour = 0;
+    let maxMsgs = 0;
+    state.hourlyStats.forEach((count, hr) => {
+        if (count > maxMsgs) { maxMsgs = count; peakHour = hr; }
+    });
+    const ampm = peakHour >= 12 ? 'PM' : 'AM';
+    const peakHour12 = ((peakHour % 12) || 12) + " " + ampm;
+    $("wg-peak-time").innerText = peakHour12;
+
+    // Emojis
+    const sortedEmojis = Object.entries(state.emojiStats).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const emojisContainer = $("wg-emojis");
+    if (sortedEmojis.length === 0) {
+        emojisContainer.innerHTML = "<span style='color: var(--text-secondary);'>None</span>";
+    } else {
+        emojisContainer.innerHTML = sortedEmojis.map(e => `<div class="wg-emoji-badge">${e[0]}</div>`).join("");
+    }
+
+    // Split Bar
+    const sortedSenders = Object.entries(state.senderStats).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    const splitBar = $("wg-split-bar");
+    const splitLabels = $("wg-split-labels");
+    
+    let barHtml = "";
+    let labelsHtml = "";
+    
+    sortedSenders.forEach(([name, count]) => {
+        const pct = ((count / total) * 100).toFixed(1);
+        const color = getColor(name);
+        barHtml += `<div style="width: ${pct}%; background-color: ${color}; height: 100%; transition: width 0.5s ease;"></div>`;
+        labelsHtml += `<div style="font-size: 12px; color: var(--text-primary);"><span style="color: ${color}">●</span> ${escapeHtml(name)} (${pct}%)</div>`;
+    });
+    
+    splitBar.innerHTML = barHtml;
+    splitLabels.innerHTML = labelsHtml;
+}
+
+async function downloadWrappedGraphic() {
+    const element = $("wrapped-graphic");
+    if (!element) return;
+    
+    if (typeof html2canvas === "undefined") {
+        showToast("Image generation library is loading...");
+        return;
+    }
+
+    const btn = $("download-wrapped");
+    const oldText = btn.innerHTML;
+    btn.innerHTML = `<i class="ph-fill ph-spinner-gap processing-spinner" style="font-size: 18px; margin-right: 8px;"></i> Generating...`;
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(element, {
+            backgroundColor: "#0b141a",
+            scale: window.devicePixelRatio > 1 ? 2 : 3, // High quality 
+            useCORS: true,
+            logging: false
+        });
+        
+        const link = document.createElement("a");
+        link.download = `Obsidian_Wrapped_${state.chatTitle.replace(/\s+/g, '_')}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        
+        showToast("Image downloaded!");
+    } catch (err) {
+        console.error(err);
+        showToast("Failed to download image.");
+    } finally {
+        btn.innerHTML = oldText;
+        btn.disabled = false;
+    }
 }
 
 function renderChatList() {
@@ -612,7 +758,6 @@ function renderMediaItem(item) {
         `;
     }
 
-    // Check if we already loaded this image while scrolling previously
     const media = state.mediaStore.get(item.id);
     const isLoaded = media?.hasLoaded;
     const srcAttr = isLoaded ? `src="${escapeAttribute(item.url)}" class="loaded"` : `data-src="${escapeAttribute(item.url)}"`;
@@ -919,6 +1064,10 @@ function handleGlobalKeydown(event) {
     if (event.key === "Escape") {
         if (state.activeMediaId) {
             closeMediaModal();
+            return;
+        }
+        if (!$("wrapped-modal")?.hidden) {
+            $("close-wrapped")?.click();
             return;
         }
         if (!$("date-sheet")?.hidden) {
@@ -1260,7 +1409,6 @@ async function parseChatData(text) {
     const lines = text.split(/\r?\n/);
     const totalLines = lines.length;
     
-    // Robust regex handles iOS brackets, Android hyphens, colons in names, and various date formats
     const messageRegex = /^\[?(\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}[,.]?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s?[APap][Mm])?)\]?\s*(?:-\s*)?(.*?):\s*(.*)$/;
     const systemRegex = /^\[?(\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}[,.]?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s?[APap][Mm])?)\]?\s*(?:-\s*)?(.*)$/;
 
@@ -1269,14 +1417,11 @@ async function parseChatData(text) {
 
     for (let index = 0; index < totalLines; index++) {
         const originalLine = lines[index];
-        // Strip invisible directional marks that break regex parsing
         const line = originalLine.replace(/[\u200E\u200F\u202A-\u202E\u200B]/g, "");
 
-        // Yield to the browser every 2000 lines to guarantee a UI update
         if (index > 0 && index % 2000 === 0) {
             const pct = Math.round((index / totalLines) * 100);
             updateLoadingCopy(`Parsing messages... ${pct}% (${index.toLocaleString()} lines)`);
-            // 5ms explicitly forces the browser to drop the main thread and paint the text
             await new Promise(resolve => setTimeout(resolve, 5));
         }
 
@@ -1329,8 +1474,9 @@ async function parseChatData(text) {
 
 function appendContinuation(message, line) {
     const parsed = parseMessageContent(line, true);
-    // Preserve blank lines perfectly
     message.text = message.text !== "" ? `${message.text}\n${parsed.text}` : parsed.text;
+
+    trackEmojis(line);
 
     if (parsed.mediaItems.length) {
         message.mediaItems.push(...parsed.mediaItems);
