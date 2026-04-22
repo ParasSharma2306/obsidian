@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#111b21">
+    <title>Viewer - ChatLume Private WhatsApp Chat Viewer</title>
+    <meta name="description" content="View your exported WhatsApp chats privately in your browser.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/icon-192.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="../js/script.js" defer></script>
+</head>
+<body class="dark-theme">
+    <nav class="app-nav">
+        <a href="../index.html" class="back-home"><i class="ph ph-house"></i> Home</a>
+        <div class="nav-links">
+            <a href="./wrapped.html">Wrapped</a>
+            <a href="./analyzer.html">Analyzer</a>
+        </div>
+    </nav>
+    <div id="loader" aria-hidden="true">
+        <div class="loader-content">
+            <i class="ph-fill ph-chat-teardrop-text loader-logo"></i>
+            <div class="progress-bar" aria-hidden="true"><div class="fill"></div></div>
+            <p><i class="ph-fill ph-shield-check"></i> 100% Local Processing</p>
+        </div>
+    </div>
+
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+            <header class="sidebar-header">
+                <button class="profile-thumb profile-button" id="open-profile" type="button" title="My Profile" aria-label="Open profile">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" id="my-pfp-img" alt="Your profile picture">
+                </button>
+                <div class="sidebar-nav">
+                <button id="install-pwa" type="button" title="Install App" aria-label="Install App" hidden><i class="ph ph-download-simple"></i></button>
+                    <button id="open-stats" type="button" title="Analytics" aria-label="Open analytics"><i class="ph ph-chart-pie-slice"></i></button>
+                    <button id="open-info" type="button" title="App Info" aria-label="Open app info"><i class="ph ph-info"></i></button>
+                    <button id="theme-toggle" type="button" title="Toggle Theme" aria-label="Toggle theme"><i class="ph ph-moon-stars"></i></button>
+                </div>
+            </header>
+
+            <div class="sidebar-content">
+                <section class="upload-state" id="upload-panel">
+                    <div class="brand-hero">
+                        <h1>ChatLume</h1>
+                        <span>WhatsApp Chat Viewer</span>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <label for="display-name">Display Name</label>
+                        <input type="text" id="display-name" placeholder="Exact name in chat (e.g. Paras)" autocomplete="name">
+                    </div>
+
+                    <button class="drop-target" id="drop-target" type="button" aria-describedby="drop-help">
+                        <i class="ph ph-file-arrow-up" aria-hidden="true"></i>
+                        <p>Drop <strong>.txt</strong> or <strong>.zip</strong></p>
+                        <span id="drop-help" class="sr-only">Choose a WhatsApp export text file or a ZIP with media.</span>
+                        <input type="file" id="file-input" accept=".txt,.zip" hidden>
+                        <span class="btn-secondary">Browse</span>
+                    </button>
+
+                    <button class="btn-primary" id="load-chat" type="button">Load Chat</button>
+
+                    <div class="load-hint" id="load-hint">
+                        Your Data Never Leaves Your Device. Large ZIP exports can take a moment to parse.
+                    </div>
+
+                    <div class="privacy-pill">
+                        <i class="ph-fill ph-shield-check"></i> 100% Local Processing. No Uploads.
+                    </div>
+                </section>
+
+                <section class="chat-list hidden" id="chat-list-panel" aria-label="Loaded chat">
+                    <div class="search-bar-sidebar">
+                        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+                        <input type="text" placeholder="Search chats" disabled aria-label="Search chats">
+                    </div>
+                    <button class="chat-item active" id="chat-list-item" type="button">
+                        <div class="chat-item-avatar" aria-hidden="true"></div>
+                        <div class="chat-item-info">
+                            <h4 id="sidebar-title">Chat History</h4>
+                            <span id="sidebar-sub">Active now</span>
+                        </div>
+                    </button>
+                </section>
+            </div>
+
+            <section class="drawer" id="profile-drawer" aria-label="Profile drawer">
+                <div class="drawer-header">
+                    <button class="drawer-close" data-drawer-close="profile" type="button" aria-label="Close profile"><i class="ph ph-arrow-left"></i></button>
+                    <h2>Profile</h2>
+                </div>
+                <div class="drawer-scroll">
+                    <div class="profile-hero">
+                        <button class="large-avatar avatar-upload-trigger" id="open-pfp-upload" type="button">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" id="drawer-pfp-img" alt="Profile preview">
+                            <span class="overlay"><i class="ph ph-camera"></i></span>
+                        </button>
+                        <input type="file" id="pfp-upload" hidden accept="image/*">
+                        <h2>Paras Sharma</h2>
+                    </div>
+                    <div class="section-label">SUPPORT DEVELOPMENT</div>
+                    <div class="support-card">
+                        <p class="support-text">If you like ChatLume, consider supporting.</p>
+                        <div class="qr-frame">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dparassharma2306%40okaxis%26pn%3DParas%2520Sharma" alt="UPI QR Code" loading="lazy">
+                        </div>
+                        <div class="upi-display">
+                            <span>parassharma2306@okaxis</span>
+                            <button id="copy-upi" type="button"><i class="ph ph-copy"></i></button>
+                        </div>
+                        <div class="secure-badge">
+                            <i class="ph-fill ph-lock-key"></i> 100% Secure Payment
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="drawer" id="stats-drawer" aria-label="Analytics drawer">
+                <div class="drawer-header">
+                    <button class="drawer-close" data-drawer-close="stats" type="button" aria-label="Close analytics"><i class="ph ph-arrow-left"></i></button>
+                    <h2>Analytics</h2>
+                </div>
+                <div class="drawer-scroll">
+                    <div class="wrapped-card">
+                        <h3>ChatLume Wrapped ✨</h3>
+                        <p>Generate a beautiful infographic of your chat personality and trends!</p>
+                        <button class="btn-wrapped" id="generate-wrapped">Generate Wrapped</button>
+                    </div>
+                    <div class="stats-overview">
+                        <div class="stat-box">
+                            <span class="val" id="stat-total">0</span>
+                            <span class="label">Messages</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="val" id="stat-media">0</span>
+                            <span class="label">Media</span>
+                        </div>
+                    </div>
+                    <div class="section-label">EMOJI INSIGHTS</div>
+                    <div class="emoji-grid" id="emoji-grid"></div>
+                    <div class="section-label">ACTIVITY BREAKDOWN</div>
+                    <div class="stats-list" id="stats-list"></div>
+                </div>
+            </section>
+
+            <section class="drawer" id="info-drawer" aria-label="App info drawer">
+                <div class="drawer-header">
+                    <button class="drawer-close" data-drawer-close="info" type="button" aria-label="Close app info"><i class="ph ph-arrow-left"></i></button>
+                    <h2>App Info</h2>
+                </div>
+                <div class="drawer-scroll">
+                    <div class="info-block">
+                        <h3>About ChatLume</h3>
+                        <p>ChatLume is a privacy-first WhatsApp chat viewer and analytics tool. It turns exported chats into a familiar interface with deep analytics, maintaining 100% processing safely in your browser.</p>
+                    </div>
+                    
+                    <div class="info-block">
+                        <h3>Capabilities</h3>
+                        <ul class="feature-list">
+                            <li><i class="ph-fill ph-shield-check"></i> <strong>Zero Data Transfer:</strong> No uploads, no servers, completely private.</li>
+                            <li><i class="ph-fill ph-file-text"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally.</li>
+                            <li><i class="ph-fill ph-image"></i> <strong>Inline Media:</strong> Renders images, videos, audio, and documents directly from ZIP exports.</li>
+                            <li><i class="ph-fill ph-sparkle"></i> <strong>ChatLume Wrapped:</strong> Extract emojis and hourly patterns to generate a personalized, shareable graphic.</li>
+                            <li><i class="ph-fill ph-chart-bar"></i> <strong>Analytics:</strong> View total counts, media usage, and per-sender conversation shares.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-block">
+                        <h3>Notes</h3>
+                        <ul class="feature-list">
+                            <li><i class="ph-fill ph-info"></i> ZIP exports containing attachments provide the richest viewing experience.</li>
+                            <li><i class="ph-fill ph-warning-circle"></i> For massive chat histories (e.g. 100k+ messages), exporting "Without Media" ensures much faster load times and prevents browser memory issues.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close sidebar"></button>
+
+        <main class="chat-interface">
+            <div class="chat-bg" aria-hidden="true"></div>
+            <header class="chat-header">
+                <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open sidebar"><i class="ph ph-list"></i></button>
+                <div class="header-profile">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" class="header-pfp" alt="Chat avatar">
+                    <div class="header-info">
+                        <h2 id="header-name">Welcome</h2>
+                        <p id="header-meta">ChatLume</p>
+                    </div>
+                </div>
+                <div class="header-tools">
+                    <button id="search-toggle" type="button" aria-label="Search messages"><i class="ph ph-magnifying-glass"></i></button>
+                    <div class="menu-container">
+                        <button id="menu-toggle" type="button" aria-label="Open chat menu"><i class="ph ph-dots-three-vertical"></i></button>
+                        <div class="dropdown-menu" id="header-menu">
+                            <button type="button" class="menu-item" id="date-jump-action"><i class="ph ph-calendar-blank"></i> Go to Date</button>
+                            <button type="button" class="menu-item" id="jump-bottom-action"><i class="ph ph-arrow-down"></i> Jump to Bottom</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="search-toolbar" id="search-toolbar">
+                <div class="search-input-group">
+                    <button id="search-close" type="button" aria-label="Close search"><i class="ph ph-arrow-left"></i></button>
+                    <input type="text" id="live-search" placeholder="Search messages..." autocomplete="off">
+                </div>
+                <div class="search-nav">
+                    <span id="search-counter" aria-live="polite"></span>
+                    <button id="search-up" type="button"><i class="ph ph-caret-up"></i></button>
+                    <button id="search-down" type="button"><i class="ph ph-caret-down"></i></button>
+                </div>
+            </section>
+
+            <section class="messages-viewport" id="viewport" aria-label="Messages">
+                <div class="empty-placeholder" id="empty-state">
+                    <div class="illustration">
+                        <i class="ph-duotone ph-chat-teardrop-text"></i>
+                    </div>
+                    <h2>ChatLume</h2>
+                    <p>Load a chat file to view history, media, stats, and more.<br>Secure. Fast. Mobile-ready.</p>
+                </div>
+                <div class="message-list" id="message-list"></div>
+            </section>
+
+            <footer class="chat-footer">
+                <button type="button" aria-label="Emoji picker"><i class="ph ph-smiley"></i></button>
+                <button type="button" aria-label="Add attachment"><i class="ph ph-plus"></i></button>
+                <div class="fake-input">Type a message</div>
+                <button type="button" aria-label="Record voice note"><i class="ph ph-microphone"></i></button>
+            </footer>
+        </main>
+
+        <div class="media-modal" id="wrapped-modal" hidden>
+            <button class="media-modal-backdrop" id="wrapped-modal-backdrop" type="button"></button>
+            <div class="media-modal-dialog" style="max-width: 450px;" role="dialog" aria-modal="true">
+                <div class="media-modal-header">
+                    <div>
+                        <h2>Your ChatLume Wrapped</h2>
+                        <p>Save and share your chat personality.</p>
+                    </div>
+                    <div class="media-modal-actions">
+                        <button id="close-wrapped" type="button"><i class="ph ph-x"></i></button>
+                    </div>
+                </div>
+                <div class="media-modal-body" style="display:block; padding: 20px; background: var(--bg-sidebar);">
+                    <div id="wrapped-graphic" class="wrapped-graphic-container">
+                        <div class="wg-header">
+                            <h2>ChatLume Wrapped</h2>
+                            <p id="wg-chat-title">Chat Name</p>
+                        </div>
+                        <div class="wg-stats">
+                            <div class="wg-stat-card">
+                                <span>Total Messages</span>
+                                <h3 id="wg-total-msgs">0</h3>
+                            </div>
+                            <div class="wg-stat-card">
+                                <span>Peak Time</span>
+                                <h3 id="wg-peak-time">12 PM</h3>
+                            </div>
+                        </div>
+                        <div class="wg-top-emojis">
+                            <span>Top Emojis</span>
+                            <div class="wg-emoji-list" id="wg-emojis"></div>
+                        </div>
+                        <div class="wg-split">
+                            <span>Chat Split</span>
+                            <div class="wg-split-bar" id="wg-split-bar"></div>
+                            <div class="wg-split-labels" id="wg-split-labels"></div>
+                        </div>
+                        <div class="wg-footer">Generated securely by ChatLume</div>
+                    </div>
+                    <button class="btn-primary" id="download-wrapped" style="width: 100%; margin-top: 20px;">
+                        <i class="ph ph-download-simple" style="margin-right: 8px;"></i> Download Image
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="processing-overlay" id="processing-overlay" hidden>
+            <div class="processing-card" role="status">
+                <i class="ph-fill ph-spinner-gap processing-spinner"></i>
+                <h2 id="processing-title">Loading chat</h2>
+                <p id="processing-copy">Parsing your export locally...</p>
+            </div>
+        </div>
+        <div id="toast" aria-live="polite">Copied to Clipboard</div>
+    </div>
+</body>
+</html>

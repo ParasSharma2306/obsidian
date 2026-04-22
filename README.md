@@ -1,8 +1,8 @@
-# Obsidian - WhatsApp Chat Viewer
+# ChatLume (Formerly Obsidian) - WhatsApp Chat Viewer
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-Obsidian is a privacy-first WhatsApp export viewer.
+ChatLume (Formerly Obsidian) is a privacy-first WhatsApp export viewer.
 It parses exported `.txt` files (or `.zip` files that contain a `.txt`) directly in your browser and renders a WhatsApp-like chat UI with search, analytics, and inline media support.
 
 ## Privacy
@@ -10,6 +10,7 @@ It parses exported `.txt` files (or `.zip` files that contain a `.txt`) directly
 - All parsing is local in the browser.
 - No server upload is required.
 - Your chat file never leaves your machine unless you choose to host/modify the app yourself.
+- **PWA Enabled**: Install ChatLume to your device and use it fully offline with no internet connection required.
 
 ## Current Features
 
@@ -89,11 +90,11 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 Paras Sharma
 
-- Website: [parassharma.com](https://parassharma.com)
+- Website: [parassharma.in](https://parassharma.in)
 - GitHub: [@parassharma2306](https://github.com/ParasSharma2306)
 
 ## Live Demo
 
-[obsidian.parassharma.in](https://obsidian.parassharma.in)
+chatlume.parassharma.in
 
 Note: This project is not affiliated with or endorsed by WhatsApp Inc.

@@ -1,0 +1,40 @@
+{
+  "name": "ChatLume - Private WhatsApp Chat Viewer",
+  "short_name": "ChatLume",
+  "id": "/",
+  "description": "View, analyze, and relive your WhatsApp chats locally without uploading any data.",
+  "start_url": "public/viewer.html",
+  "display": "standalone",
+  "background_color": "#0b141a",
+  "theme_color": "#00a884",
+  "orientation": "portrait-primary",
+  "categories": ["utilities", "productivity", "social"],
+  "icons": [
+    {
+      "src": "assets/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open Viewer",
+      "short_name": "Viewer",
+      "description": "View WhatsApp Chats locally",
+      "url": "public/viewer.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
