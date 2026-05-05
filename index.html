@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#00a884">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ChatLume - Private WhatsApp Chat Viewer, Analyzer and Wrapped</title>
+    <meta name="description" content="ChatLume is a fully private WhatsApp chat viewer and analyzer that runs locally in your browser. Open exports, search messages, view media, and create ChatLume Wrapped with no uploads or server.">
+    <meta name="keywords" content="WhatsApp Chat Viewer, ChatLume, WhatsApp Wrapped, WhatsApp Analytics, Local Chat Viewer, Private Chat Reader">
+    <meta name="author" content="Paras Sharma">
+    <meta name="application-name" content="ChatLume">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://chatlume.parassharma.in/">
+    <meta property="og:site_name" content="ChatLume">
+    <meta property="og:title" content="ChatLume - Private WhatsApp Chat Viewer, Analyzer and Wrapped">
+    <meta property="og:description" content="View, analyze, and relive WhatsApp exports completely offline. No uploads, no backend, no tracking.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chatlume.parassharma.in/">
+    <meta property="og:image" content="https://chatlume.parassharma.in/assets/icon-512.png">
+    <meta property="og:image:alt" content="ChatLume app icon">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ChatLume - Private WhatsApp Chat Viewer">
+    <meta name="twitter:description" content="A fully local WhatsApp export viewer, analyzer, and Wrapped generator.">
+    <meta name="twitter:image" content="https://chatlume.parassharma.in/assets/icon-512.png">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="./js/script.js" defer></script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ChatLume",
+        "alternateName": "Private WhatsApp Chat Viewer",
+        "url": "https://chatlume.parassharma.in/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "description": "ChatLume is a private WhatsApp chat viewer, analyzer, and Wrapped generator that runs locally in the browser without uploading chat data.",
+        "creator": {
+            "@type": "Person",
+            "name": "Paras Sharma",
+            "url": "https://parassharma.in"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Local WhatsApp export parsing",
+            "Private chat viewing",
+            "Inline media from ZIP exports",
+            "Message search",
+            "Chat analytics",
+            "ChatLume Wrapped image generation",
+            "Offline PWA support"
+        ],
+        "browserRequirements": "Requires JavaScript and File API support. No server upload required."
+    }
+    </script>
+    <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
+</head>
+<body class="landing-page">
+    <nav class="landing-nav">
+        <div class="logo">
+            <i class="ph-fill ph-chat-teardrop-text"></i> ChatLume
+        </div>
+        <div class="nav-links">
+            <a href="./public/viewer.html">Viewer</a>
+            <a href="./public/wrapped.html">Wrapped</a>
+            <a href="./public/analyzer.html">Analyzer</a>
+            <a href="./public/how-it-works.html">How it Works</a>
+            <a href="https://github.com/ParasSharma2306/ChatLume" target="_blank" rel="noopener noreferrer" class="github-nav-link"><i class="ph-fill ph-github-logo"></i> GitHub</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>ChatLume</h1>
+        <p>A private WhatsApp chat viewer, analyzer, and Wrapped generator that runs fully in your browser. Your export stays on your device.</p>
+        <div class="hero-actions">
+            <a href="./public/viewer.html" class="btn-primary btn-large"><i class="ph ph-folder-open"></i> Open Viewer</a>
+            <a href="./public/wrapped.html" class="btn-secondary btn-large"><i class="ph ph-sparkle"></i> Generate Wrapped</a>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="feature-card">
+            <i class="ph-fill ph-shield-check"></i>
+            <h3>100% Private</h3>
+            <p>Runs entirely in your browser. No backend, no APIs, no data collection. Your chat files never leave your device.</p>
+        </div>
+        <div class="feature-card">
+            <i class="ph-fill ph-lightning"></i>
+            <h3>Blazing Fast</h3>
+            <p>Optimized for massive chat exports. Smooth scrolling, lazy-loaded media, and instant search.</p>
+        </div>
+        <div class="feature-card">
+            <i class="ph-fill ph-chart-pie-slice"></i>
+            <h3>Deep Insights</h3>
+            <p>Discover who texts the most, your top emojis, and generate a beautiful 'ChatLume Wrapped' infographic.</p>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div>
+                <h4>ChatLume</h4>
+                <p>Private. Local. Beautiful.</p>
+            </div>
+            <div>
+                <h4>Product</h4>
+                <a href="./public/viewer.html">Viewer</a>
+                <a href="./public/wrapped.html">Wrapped</a>
+                <a href="./public/analyzer.html">Analyzer</a>
+            </div>
+            <div>
+                <h4>Resources</h4>
+                <a href="./public/how-to-use.html">How to Use</a>
+                <a href="./public/how-to-export.html">How to Export</a>
+                <a href="./public/how-it-works.html">How it Works</a>
+                <a href="./public/privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ChatLume. Created by <a href="https://parassharma.in" target="_blank" rel="noopener noreferrer">Paras Sharma</a>.</p>
+        </div>
+    </footer>
+</body>
+</html>
