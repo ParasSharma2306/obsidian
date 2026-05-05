@@ -13,8 +13,8 @@ const COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
 };
 
-function issueToken(userId) {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+function issueToken(userId, email) {
+  return jwt.sign({ id: userId, email }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 }
@@ -39,7 +39,7 @@ router.post('/signup', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 12);
     const user = await User.create({ email, passwordHash });
 
-    res.cookie('token', issueToken(user._id), COOKIE_OPTIONS);
+    res.cookie('token', issueToken(user._id, user.email), COOKIE_OPTIONS);
     res.status(201).json({ id: user._id, email: user.email });
   } catch (err) {
     res.status(500).json({ error: 'Signup failed' });
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    res.cookie('token', issueToken(user._id), COOKIE_OPTIONS);
+    res.cookie('token', issueToken(user._id, user.email), COOKIE_OPTIONS);
     res.json({ id: user._id, email: user.email });
   } catch (err) {
     res.status(500).json({ error: 'Login failed' });

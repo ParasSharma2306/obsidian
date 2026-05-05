@@ -11,7 +11,7 @@
     <meta name="author" content="Paras Sharma">     
     <meta name="application-name" content="ChatLume">     
     <meta name="robots" content="index, follow">     
-    <link rel="canonical" href="https://chatlume.parassharma.in/public/viewer.html">     
+    <link rel="canonical" href="https://chatlume.parassharma.in/viewer">
     <meta property="og:site_name" content="ChatLume">     
     <meta property="og:title" content="ChatLume Viewer - Private Local WhatsApp Chat Reader">     
     <meta property="og:description" content="Open WhatsApp exports locally, search messages, view ZIP media, and generate analytics without uploads.">     
@@ -29,16 +29,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>     
-    <script src="../js/script.js" defer></script> 
+    <script src="../js/script.js" defer></script>
+    <script src="../js/auth.js" defer></script>
     <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
 </head> 
 <body class="dark-theme">     
     <nav class="app-nav">         
-        <a href="../index.html" class="back-home"><i class="ph ph-house"></i> Home</a>         
-        <div class="nav-links">             
-            <a href="./wrapped.html">Wrapped</a>             
-            <a href="./analyzer.html">Analyzer</a>         
-        </div>     
+        <a href="/" class="back-home"><i class="ph ph-house"></i> Home</a>
+        <div class="nav-links">
+            <a href="/wrapped">Wrapped</a>
+            <a href="/analyzer">Analyzer</a>
+        </div>
     </nav>     
     <div id="loader" aria-hidden="true">         
         <div class="loader-content">             
@@ -114,19 +115,12 @@
                         <input type="file" id="pfp-upload" hidden accept="image/*">                         
                         <h2>Paras Sharma</h2>                     
                     </div>                     
-                    <div class="section-label">SUPPORT DEVELOPMENT</div>                     
-                    <div class="support-card">                         
-                        <p class="support-text">If you like ChatLume, consider supporting.</p>                         
-                        <div class="qr-frame">                             
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dparassharma2306%40okaxis%26pn%3DParas%2520Sharma" alt="UPI QR Code" loading="lazy">                         
-                        </div>                         
-                        <div class="upi-display">                             
-                            <span>parassharma2306@okaxis</span>                             
-                            <button id="copy-upi" type="button"><i class="ph ph-copy"></i></button>                         
-                        </div>                         
-                        <div class="secure-badge">                             
-                            <i class="ph-fill ph-lock-key"></i> 100% Secure Payment                         
-                        </div>                     
+                    <div class="section-label">UPGRADE</div>
+                    <div class="support-card" style="text-align:center;padding:20px 16px;">
+                        <p class="support-text" style="margin-bottom:14px;">Unlock Pro for advanced analytics, cross-session history, and more.</p>
+                        <a href="/pricing" style="display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:#fff;padding:10px 20px;border-radius:20px;text-decoration:none;font-weight:600;font-size:14px;box-shadow:0 4px 10px rgba(0,168,132,0.3);">
+                            <i class="ph ph-lightning"></i> See Pro Plans
+                        </a>
                     </div>                 
                 </div>             
             </section>             
@@ -257,6 +251,10 @@
                             <input type="checkbox" id="setting-rich-formatting" data-setting="richText">                         
                         </label>                     
                     </div>                     
+                    <div class="auth-settings-hint" id="auth-settings-hint">
+                        <i class="ph ph-user-circle"></i>
+                        <span><a href="/login">Sign in</a> to sync preferences across devices.</span>
+                    </div>
                     <button class="btn-secondary settings-reset" id="reset-settings" type="button">Reset Settings</button>                 
                 </div>             
             </section>             

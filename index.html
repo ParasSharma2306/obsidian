@@ -29,6 +29,7 @@
     <link rel="apple-touch-icon" href="assets/icon-192.png">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="./js/script.js" defer></script>
+    <script src="./js/auth.js" defer></script>
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -65,15 +66,14 @@
 </head>
 <body class="landing-page">
     <nav class="landing-nav">
-        <div class="logo">
+        <a class="logo" href="/" style="text-decoration:none">
             <i class="ph-fill ph-chat-teardrop-text"></i> ChatLume
-        </div>
+        </a>
         <div class="nav-links">
-            <a href="./public/viewer.html">Viewer</a>
-            <a href="./public/wrapped.html">Wrapped</a>
-            <a href="./public/analyzer.html">Analyzer</a>
-            <a href="./public/how-it-works.html">How it Works</a>
-            <a href="https://github.com/ParasSharma2306/ChatLume" target="_blank" rel="noopener noreferrer" class="github-nav-link"><i class="ph-fill ph-github-logo"></i> GitHub</a>
+            <a href="/viewer">Viewer</a>
+            <a href="/analyzer">Analyzer</a>
+            <a href="/pricing">Pricing</a>
+            <div class="auth-nav-slot"></div>
         </div>
     </nav>
 
@@ -81,8 +81,8 @@
         <h1>ChatLume</h1>
         <p>A private WhatsApp chat viewer, analyzer, and Wrapped generator that runs fully in your browser. Your export stays on your device.</p>
         <div class="hero-actions">
-            <a href="./public/viewer.html" class="btn-primary btn-large"><i class="ph ph-folder-open"></i> Open Viewer</a>
-            <a href="./public/wrapped.html" class="btn-secondary btn-large"><i class="ph ph-sparkle"></i> Generate Wrapped</a>
+            <a href="/viewer" class="btn-primary btn-large"><i class="ph ph-folder-open"></i> Open Viewer</a>
+            <a href="/wrapped" class="btn-secondary btn-large"><i class="ph ph-sparkle"></i> Generate Wrapped</a>
         </div>
     </header>
 
@@ -112,20 +112,27 @@
             </div>
             <div>
                 <h4>Product</h4>
-                <a href="./public/viewer.html">Viewer</a>
-                <a href="./public/wrapped.html">Wrapped</a>
-                <a href="./public/analyzer.html">Analyzer</a>
+                <a href="/viewer">Viewer</a>
+                <a href="/analyzer">Analyzer</a>
+                <a href="/wrapped">Wrapped</a>
+                <a href="/pricing">Pricing</a>
             </div>
             <div>
                 <h4>Resources</h4>
-                <a href="./public/how-to-use.html">How to Use</a>
-                <a href="./public/how-to-export.html">How to Export</a>
-                <a href="./public/how-it-works.html">How it Works</a>
-                <a href="./public/privacy.html">Privacy Policy</a>
+                <a href="/how-to-export">How to Export</a>
+                <a href="/how-to-use">How to Use</a>
+                <a href="/how-it-works">How it Works</a>
+                <a href="/privacy">Privacy</a>
+            </div>
+            <div>
+                <h4>Account</h4>
+                <a href="/login">Sign in</a>
+                <a href="/signup">Sign up</a>
+                <a href="/account">Dashboard</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 ChatLume. Created by <a href="https://parassharma.in" target="_blank" rel="noopener noreferrer">Paras Sharma</a>.</p>
+            <p>&copy; 2025 ChatLume. Your chats never leave your device.</p>
         </div>
     </footer>
 </body>

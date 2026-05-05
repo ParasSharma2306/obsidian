@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+Disallow: /api/
+Disallow: /login
+Disallow: /signup
+Disallow: /account
+
 Sitemap: https://chatlume.parassharma.in/sitemap.xml

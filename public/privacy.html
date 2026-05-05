@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00a884">
-    <title>ChatLume Privacy Policy</title>
-    <meta name="description" content="ChatLume's privacy policy for local, client-side WhatsApp chat viewing.">
+    <title>Privacy Policy – ChatLume</title>
+    <meta name="description" content="ChatLume's privacy policy. Your chat files never leave your device. Account data is stored only to power optional Pro features.">
     <meta name="author" content="Paras Sharma">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://chatlume.parassharma.in/public/privacy.html">
+    <link rel="canonical" href="https://chatlume.parassharma.in/privacy">
     <meta property="og:site_name" content="ChatLume">
-    <meta property="og:title" content="ChatLume Privacy Policy">
-    <meta property="og:description" content="ChatLume's privacy policy for local, client-side WhatsApp chat viewing.">
+    <meta property="og:title" content="Privacy Policy – ChatLume">
+    <meta property="og:description" content="ChatLume's privacy policy — your chat files are always processed locally.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://chatlume.parassharma.in/public/privacy.html">
+    <meta property="og:url" content="https://chatlume.parassharma.in/privacy">
     <meta property="og:image" content="https://chatlume.parassharma.in/assets/icon-512.png">
     <meta property="og:image:alt" content="ChatLume app icon">
     <meta name="twitter:card" content="summary">
@@ -22,21 +22,103 @@
     <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../assets/icon-192.png">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/auth.js" defer></script>
     <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
+    <style>
+        .privacy-page { max-width: 720px; margin: 60px auto; padding: 0 20px 80px; }
+        .privacy-page h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+        .privacy-page .updated { font-size: 13px; color: var(--text-muted); margin-bottom: 40px; }
+        .privacy-page h2 { font-size: 18px; font-weight: 700; margin: 36px 0 10px; }
+        .privacy-page p { font-size: 15px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 14px; }
+        .privacy-page ul { margin: 0 0 16px 20px; }
+        .privacy-page li { font-size: 15px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 6px; }
+        .highlight-box {
+            display: flex;
+            gap: 12px;
+            background: rgba(0,168,132,0.07);
+            border: 1px solid rgba(0,168,132,0.2);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 32px;
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .highlight-box i { font-size: 22px; color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+        .highlight-box strong { color: var(--text-primary); }
+    </style>
 </head>
 <body class="page-layout">
     <nav class="landing-nav">
-        <div class="logo"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</div>
-        <div class="nav-links"><a href="../index.html">Home</a><a href="viewer.html">Viewer</a></div>
+        <a class="logo" href="/" style="text-decoration:none"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</a>
+        <div class="nav-links">
+            <a href="/viewer">Viewer</a>
+            <a href="/analyzer">Analyzer</a>
+            <a href="/pricing">Pricing</a>
+            <div class="auth-nav-slot"></div>
+        </div>
     </nav>
-    <main class="content-container article-layout">
+
+    <div class="privacy-page">
         <h1>Privacy Policy</h1>
-        <p>Your privacy is our ultimate feature. ChatLume operates strictly as a client-side web application.</p>
+        <p class="updated">Last updated: May 2025</p>
+
+        <div class="highlight-box">
+            <i class="ph-fill ph-shield-check"></i>
+            <span><strong>The short version:</strong> Your chat files are processed entirely in your browser and never uploaded to our servers. If you create an account, we store only your email and subscription status — nothing from your chats.</span>
+        </div>
+
+        <h2>1. Chat Data</h2>
+        <p>ChatLume processes all chat files (WhatsApp <code>.txt</code>/<code>.zip</code> and Instagram <code>.zip</code>) entirely within your browser using the HTML5 File API and JavaScript. No chat content — messages, contact names, media, or metadata — is ever transmitted to any server operated by ChatLume or any third party.</p>
+        <p>You can disconnect from the internet after loading the viewer page and the tool will continue to work perfectly.</p>
+
+        <h2>2. Account Data</h2>
+        <p>If you choose to create a ChatLume account, we store:</p>
         <ul>
-            <li><strong>No Data Upload:</strong> ChatLume does not have a backend server or database.</li>
-            <li><strong>Runs Locally:</strong> All file parsing, statistical analysis, and rendering happen inside your device's RAM.</li>
-            <li><strong>No Tracking:</strong> We do not track the contents of your messages, contact names, or media.</li>
+            <li>Your email address</li>
+            <li>A hashed (bcrypt) password — we never store your plaintext password</li>
+            <li>Your subscription status (Free or Pro) and billing period dates</li>
+            <li>Account creation timestamp</li>
         </ul>
-    </main>
+        <p>This data is stored in a MongoDB database hosted on a private server. It is used solely to authenticate you and determine your subscription tier.</p>
+
+        <h2>3. Payment Data</h2>
+        <p>Payments are processed by <strong>Dodo Payments</strong>. ChatLume never receives or stores your card details. When you upgrade to Pro, Dodo Payments securely handles your payment information and notifies us of the subscription status via webhook. See <a href="https://dodopayments.com/privacy" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Dodo Payments' Privacy Policy</a> for details.</p>
+
+        <h2>4. Analytics</h2>
+        <p>ChatLume uses <strong>Umami</strong>, a privacy-focused, cookie-free analytics tool, to understand aggregate usage (page views, device types). Umami does not track individuals, store personal data, or use cookies. No IP addresses or fingerprints are recorded.</p>
+
+        <h2>5. Cookies</h2>
+        <p>If you sign in, we set a single <code>httpOnly</code> session cookie containing a signed JWT. This cookie is used only to authenticate your session — it contains your user ID and email. It expires after 7 days. We do not use advertising or tracking cookies.</p>
+
+        <h2>6. Third-Party Services</h2>
+        <ul>
+            <li><strong>Dodo Payments</strong> — subscription billing</li>
+            <li><strong>Umami Analytics</strong> — privacy-first page analytics</li>
+            <li><strong>MongoDB Atlas</strong> — account database hosting</li>
+        </ul>
+
+        <h2>7. Data Deletion</h2>
+        <p>To delete your account and all associated data, email <a href="mailto:hello@parassharma.com" style="color:var(--primary)">hello@parassharma.com</a> with the subject "Delete my account". We will permanently remove your data within 7 days.</p>
+
+        <h2>8. Children</h2>
+        <p>ChatLume is not directed at children under 13. We do not knowingly collect data from children.</p>
+
+        <h2>9. Changes</h2>
+        <p>If we make material changes to this policy, we will update the "Last updated" date above. Continued use of ChatLume after changes constitutes acceptance of the updated policy.</p>
+
+        <h2>10. Contact</h2>
+        <p>Questions? Email <a href="mailto:hello@parassharma.com" style="color:var(--primary)">hello@parassharma.com</a>.</p>
+    </div>
+
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div><h4>ChatLume</h4><p>Private. Local. Beautiful.</p></div>
+            <div><h4>Product</h4><a href="/viewer">Viewer</a><a href="/analyzer">Analyzer</a><a href="/wrapped">Wrapped</a><a href="/pricing">Pricing</a></div>
+            <div><h4>Resources</h4><a href="/how-to-export">How to Export</a><a href="/how-to-use">How to Use</a><a href="/how-it-works">How it Works</a><a href="/privacy">Privacy</a></div>
+            <div><h4>Account</h4><a href="/login">Sign in</a><a href="/signup">Sign up</a><a href="/account">Dashboard</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 ChatLume. Your chats never leave your device.</p></div>
+    </footer>
 </body>
 </html>

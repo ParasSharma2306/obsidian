@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00a884">
+    <title>Create Account – ChatLume</title>
+    <meta name="description" content="Create a free ChatLume account to unlock Pro features and manage your subscription.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://chatlume.parassharma.in/signup">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/icon-192.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/auth.js" defer></script>
+    <style>
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background-image: radial-gradient(circle at top, rgba(0,168,132,0.08), transparent 40%);
+        }
+        .auth-wrap {
+            width: 100%;
+            max-width: 400px;
+        }
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+        .auth-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+        }
+        .auth-heading { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .auth-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; }
+        .field { margin-bottom: 16px; }
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 7px;
+        }
+        .field input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .field input:focus { border-color: var(--primary); }
+        .field input.invalid { border-color: #ff6b6b; }
+        .error-banner {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,107,107,0.1);
+            border: 1px solid rgba(255,107,107,0.25);
+            color: #ff8080;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            margin-bottom: 16px;
+        }
+        .error-banner.show { display: flex; }
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 24px;
+            font-size: 15px;
+            border: 0;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 4px 10px rgba(0,168,132,0.3);
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .submit-btn:hover { background: var(--primary-hover); }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { opacity: 0.6; cursor: wait; pointer-events: none; }
+        .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        .auth-switch {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .auth-switch a { color: var(--primary); text-decoration: none; font-weight: 500; }
+        .auth-switch a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="auth-wrap">
+        <a class="auth-logo" href="/">
+            <i class="ph-fill ph-chat-teardrop-text"></i> ChatLume
+        </a>
+        <div class="auth-card">
+            <h1 class="auth-heading">Create account</h1>
+            <p class="auth-sub">Start viewing your chats privately</p>
+
+            <div id="error" class="error-banner">
+                <i class="ph ph-warning-circle"></i>
+                <span id="error-text"></span>
+            </div>
+
+            <form id="form">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" autocomplete="new-password" required>
+                    <p class="hint">At least 8 characters</p>
+                </div>
+                <div class="field">
+                    <label for="confirm">Confirm password</label>
+                    <input type="password" id="confirm" placeholder="••••••••" autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="submit-btn" id="btn">
+                    <i class="ph ph-user-plus"></i> Create account
+                </button>
+            </form>
+        </div>
+        <div class="auth-switch">
+            Already have an account? <a href="/login">Sign in</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('form');
+        const btn  = document.getElementById('btn');
+        const errBanner  = document.getElementById('error');
+        const errText    = document.getElementById('error-text');
+        const passInput  = document.getElementById('password');
+        const confirmInput = document.getElementById('confirm');
+
+        function showError(msg) {
+            errText.textContent = msg;
+            errBanner.classList.add('show');
+        }
+        function hideError() { errBanner.classList.remove('show'); }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const email    = document.getElementById('email').value.trim();
+            const password = passInput.value;
+            const confirm  = confirmInput.value;
+
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters.');
+                passInput.classList.add('invalid');
+                return;
+            }
+            passInput.classList.remove('invalid');
+
+            if (password !== confirm) {
+                showError('Passwords do not match.');
+                confirmInput.classList.add('invalid');
+                return;
+            }
+            confirmInput.classList.remove('invalid');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-circle-notch"></i> Creating account…';
+
+            try {
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showError(data.error || 'Signup failed. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph ph-user-plus"></i> Create account';
+                    return;
+                }
+                window.location.href = '/account';
+            } catch {
+                showError('Network error. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-user-plus"></i> Create account';
+            }
+        });
+
+        [passInput, confirmInput].forEach(el => {
+            el.addEventListener('input', () => el.classList.remove('invalid'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00a884">
+    <title>Account – ChatLume</title>
+    <meta name="description" content="Manage your ChatLume account and subscription.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/icon-192.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/auth.js" defer></script>
+    <style>
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100dvh;
+            background-image: radial-gradient(circle at top, rgba(0,168,132,0.07), transparent 40%);
+        }
+        .account-page { max-width: 560px; margin: 60px auto; padding: 0 20px 60px; }
+
+        /* ── skeleton / loading ── */
+        .skeleton { display: none; }
+        .skeleton.show { display: block; }
+        .skel-line {
+            height: 14px;
+            background: var(--bg-elevated);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            animation: pulse 1.4s ease infinite;
+        }
+        .skel-line.wide { width: 60%; }
+        .skel-line.narrow { width: 35%; }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ── cards ── */
+        .account-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 16px;
+        }
+        .card-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(0,168,132,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-email {
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-since { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+
+        /* ── subscription card ── */
+        .sub-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .badge-free {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .badge-pro {
+            background: rgba(0,168,132,0.15);
+            color: var(--primary);
+            border: 1px solid rgba(0,168,132,0.3);
+        }
+        .sub-body { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+        .period-end { color: var(--primary); font-weight: 500; }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 24px;
+            font-size: 15px;
+            border: 0;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,168,132,0.3);
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .upgrade-btn:hover { background: var(--primary-hover); }
+        .upgrade-btn:active { transform: scale(0.98); }
+        .upgrade-btn:disabled { opacity: 0.6; cursor: wait; pointer-events: none; }
+
+        .pro-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,168,132,0.08);
+            border: 1px solid rgba(0,168,132,0.2);
+            border-radius: 16px;
+            padding: 16px 20px;
+        }
+        .pro-icon { font-size: 28px; color: var(--primary); }
+        .pro-text .pro-title { font-weight: 700; font-size: 16px; }
+        .pro-text .pro-detail { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+        /* ── logout ── */
+        .logout-btn {
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-radius: 24px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+        .logout-btn:active { transform: scale(0.98); }
+
+        .error-banner {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,107,107,0.1);
+            border: 1px solid rgba(255,107,107,0.25);
+            color: #ff8080;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            margin-bottom: 16px;
+        }
+        .error-banner.show { display: flex; }
+
+        /* ── nav ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 28px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--primary); }
+        .page-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body class="page-layout">
+    <nav class="landing-nav">
+        <a class="logo" href="/" style="text-decoration:none">
+            <i class="ph-fill ph-chat-teardrop-text"></i> ChatLume
+        </a>
+        <div class="nav-links">
+            <a href="/viewer">Viewer</a>
+            <a href="/analyzer">Analyzer</a>
+            <a href="/pricing">Pricing</a>
+            <div class="auth-nav-slot"></div>
+        </div>
+    </nav>
+
+    <div class="account-page">
+        <h1 class="page-title">My Account</h1>
+
+        <div id="error" class="error-banner">
+            <i class="ph ph-warning-circle"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <!-- Profile card -->
+        <div class="account-card" id="profile-card" style="display:none">
+            <p class="card-label">Profile</p>
+            <div class="user-row">
+                <div class="avatar"><i class="ph-fill ph-user"></i></div>
+                <div class="user-info">
+                    <div class="user-email" id="user-email"></div>
+                    <div class="user-since" id="user-since"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription card -->
+        <div class="account-card" id="sub-card" style="display:none">
+            <div class="sub-header">
+                <p class="card-label" style="margin:0">Subscription</p>
+                <span class="badge badge-free" id="status-badge">Free</span>
+            </div>
+
+            <!-- shown when free -->
+            <div id="free-section">
+                <p class="sub-body">
+                    Upgrade to Pro for advanced analytics, unlimited history, and premium features.
+                </p>
+                <div id="upgrade-error" class="error-banner" style="margin-bottom:14px">
+                    <i class="ph ph-warning-circle"></i>
+                    <span id="upgrade-error-text"></span>
+                </div>
+                <button class="upgrade-btn" id="upgrade-btn">
+                    <i class="ph ph-lightning"></i> Upgrade to Pro — ₹149/mo
+                </button>
+            </div>
+
+            <!-- shown when pro -->
+            <div id="pro-section" style="display:none">
+                <div class="pro-banner">
+                    <i class="ph-fill ph-star" class="pro-icon" style="font-size:28px;color:var(--primary)"></i>
+                    <div class="pro-text">
+                        <div class="pro-title">You're on Pro ✨</div>
+                        <div class="pro-detail" id="period-end-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout card -->
+        <div class="account-card" id="logout-card" style="display:none">
+            <button class="logout-btn" id="logout-btn">
+                <i class="ph ph-sign-out"></i> Sign out
+            </button>
+        </div>
+    </div>
+
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div><h4>ChatLume</h4><p>Private. Local. Beautiful.</p></div>
+            <div><h4>Product</h4><a href="/viewer">Viewer</a><a href="/analyzer">Analyzer</a><a href="/wrapped">Wrapped</a><a href="/pricing">Pricing</a></div>
+            <div><h4>Resources</h4><a href="/how-to-export">How to Export</a><a href="/how-to-use">How to Use</a><a href="/how-it-works">How it Works</a><a href="/privacy">Privacy</a></div>
+            <div><h4>Account</h4><a href="/login">Sign in</a><a href="/signup">Sign up</a><a href="/account">Dashboard</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 ChatLume. Your chats never leave your device.</p></div>
+    </footer>
+
+    <script>
+        const errBanner   = document.getElementById('error');
+        const errText     = document.getElementById('error-text');
+
+        function showPageError(msg) {
+            errText.textContent = msg;
+            errBanner.classList.add('show');
+        }
+
+        async function loadAccount() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                if (!res.ok) throw new Error('Failed to load account');
+                const user = await res.json();
+                renderAccount(user);
+            } catch (err) {
+                showPageError(err.message || 'Failed to load account data.');
+            }
+        }
+
+        function renderAccount(user) {
+            // Profile
+            document.getElementById('user-email').textContent = user.email;
+            const joined = new Date(user.createdAt);
+            document.getElementById('user-since').textContent =
+                'Member since ' + joined.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+            document.getElementById('profile-card').style.display = 'block';
+
+            // Subscription
+            const isPro = user.subscription?.status === 'pro';
+            const badge = document.getElementById('status-badge');
+            if (isPro) {
+                badge.textContent = 'Pro';
+                badge.className = 'badge badge-pro';
+                document.getElementById('free-section').style.display = 'none';
+                document.getElementById('pro-section').style.display = 'block';
+                const end = user.subscription.currentPeriodEnd
+                    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+                    : null;
+                document.getElementById('period-end-text').textContent = end
+                    ? 'Renews on ' + end
+                    : 'Active subscription';
+            }
+            document.getElementById('sub-card').style.display = 'block';
+            document.getElementById('logout-card').style.display = 'block';
+        }
+
+        document.getElementById('upgrade-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('upgrade-btn');
+            const upErrBanner = document.getElementById('upgrade-error');
+            const upErrText   = document.getElementById('upgrade-error-text');
+            upErrBanner.classList.remove('show');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-circle-notch"></i> Preparing checkout…';
+            try {
+                const res = await fetch('/api/payments/create-checkout', { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok || !data.checkoutUrl) {
+                    upErrText.textContent = data.error || 'Could not start checkout. Please try again.';
+                    upErrBanner.classList.add('show');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph ph-lightning"></i> Upgrade to Pro — ₹149/mo';
+                    return;
+                }
+                window.location.href = data.checkoutUrl;
+            } catch {
+                upErrText.textContent = 'Network error. Please try again.';
+                upErrBanner.classList.add('show');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-lightning"></i> Upgrade to Pro — ₹149/mo';
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/';
+        });
+
+        loadAccount();
+    </script>
+</body>
+</html>

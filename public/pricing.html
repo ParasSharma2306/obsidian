@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00a884">
+    <title>Pricing – ChatLume</title>
+    <meta name="description" content="ChatLume is free to use. Upgrade to Pro for advanced analytics and premium features.">
+    <meta name="author" content="Paras Sharma">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://chatlume.parassharma.in/pricing">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/icon-192.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/auth.js" defer></script>
+    <style>
+        body {
+            background-image: radial-gradient(circle at top, rgba(0,168,132,0.08), transparent 40%);
+        }
+        .pricing-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 64px 20px 80px;
+        }
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .pricing-header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 14px;
+        }
+        .pricing-header p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 680px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .pricing-header h1 { font-size: 30px; }
+        }
+        .plan-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 36px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+        .plan-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary), 0 12px 40px rgba(0,168,132,0.15);
+            position: relative;
+        }
+        .featured-tag {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 16px;
+            border-radius: 20px;
+            white-space: nowrap;
+            letter-spacing: .04em;
+        }
+        .plan-name {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .plan-price {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+        .plan-price span {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0;
+        }
+        .plan-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+        .feature-list {
+            list-style: none;
+            flex: 1;
+            margin-bottom: 32px;
+        }
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14.5px;
+            color: var(--text-primary);
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .feature-list li:last-child { border-bottom: 0; }
+        .feature-list li i {
+            font-size: 17px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .check { color: var(--primary); }
+        .cross { color: var(--text-muted); }
+        .plan-cta {
+            width: 100%;
+            padding: 13px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 0;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+        }
+        .plan-cta:active { transform: scale(0.98); }
+        .cta-free {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+        .cta-free:hover { border-color: var(--primary); color: var(--primary); }
+        .cta-pro {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,168,132,0.3);
+        }
+        .cta-pro:hover { background: var(--primary-hover); }
+        .privacy-note {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body class="page-layout">
+    <nav class="landing-nav">
+        <a class="logo" href="/" style="text-decoration:none">
+            <i class="ph-fill ph-chat-teardrop-text"></i> ChatLume
+        </a>
+        <div class="nav-links">
+            <a href="/viewer">Viewer</a>
+            <a href="/analyzer">Analyzer</a>
+            <a href="/pricing">Pricing</a>
+            <div class="auth-nav-slot"></div>
+        </div>
+    </nav>
+
+    <div class="pricing-page">
+        <div class="pricing-header">
+            <h1>Simple, honest pricing</h1>
+            <p>Start for free. Upgrade when you need more. Your chat data stays on your device either way.</p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Free -->
+            <div class="plan-card">
+                <p class="plan-name">Free</p>
+                <div class="plan-price">₹0 <span>/ forever</span></div>
+                <p class="plan-desc">Everything you need to view and explore your chats privately.</p>
+                <ul class="feature-list">
+                    <li><i class="ph-fill ph-check-circle check"></i> WhatsApp .txt &amp; .zip viewer</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Inline media from ZIP exports</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Message search</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Date jump</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Basic analytics</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> ChatLume Wrapped</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Dark &amp; light themes</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> PWA — works offline</li>
+                    <li><i class="ph ph-x-circle cross"></i> Cross-session history</li>
+                    <li><i class="ph ph-x-circle cross"></i> Advanced analytics</li>
+                    <li><i class="ph ph-x-circle cross"></i> Priority support</li>
+                </ul>
+                <a class="plan-cta cta-free" href="/viewer">
+                    <i class="ph ph-folder-open"></i> Open Viewer
+                </a>
+            </div>
+
+            <!-- Pro -->
+            <div class="plan-card featured">
+                <div class="featured-tag">Most Popular</div>
+                <p class="plan-name">Pro</p>
+                <div class="plan-price">₹149 <span>/ month</span></div>
+                <p class="plan-desc">For power users who want deeper insights and a seamless experience.</p>
+                <ul class="feature-list">
+                    <li><i class="ph-fill ph-check-circle check"></i> Everything in Free</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Cross-session history</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Advanced analytics dashboard</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Multi-chat comparison</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Export analytics as PDF</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Custom Wrapped themes</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Priority support</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Early access to new features</li>
+                    <li><i class="ph-fill ph-check-circle check"></i> Chat never leaves your device</li>
+                </ul>
+                <a class="plan-cta cta-pro" href="/account">
+                    <i class="ph ph-lightning"></i> Get Pro
+                </a>
+            </div>
+        </div>
+
+        <p class="privacy-note">
+            <i class="ph-fill ph-shield-check"></i>
+            Your chat files are never uploaded. All processing happens locally in your browser.
+        </p>
+    </div>
+
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div><h4>ChatLume</h4><p>Private. Local. Beautiful.</p></div>
+            <div><h4>Product</h4><a href="/viewer">Viewer</a><a href="/analyzer">Analyzer</a><a href="/wrapped">Wrapped</a><a href="/pricing">Pricing</a></div>
+            <div><h4>Resources</h4><a href="/how-to-export">How to Export</a><a href="/how-to-use">How to Use</a><a href="/how-it-works">How it Works</a><a href="/privacy">Privacy</a></div>
+            <div><h4>Account</h4><a href="/login">Sign in</a><a href="/signup">Sign up</a><a href="/account">Dashboard</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 ChatLume. Your chats never leave your device.</p></div>
+    </footer>
+</body>
+</html>

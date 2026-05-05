@@ -9,12 +9,12 @@
     <meta name="author" content="Paras Sharma">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://chatlume.parassharma.in/public/analyzer.html">
+    <link rel="canonical" href="https://chatlume.parassharma.in/analyzer">
     <meta property="og:site_name" content="ChatLume">
     <meta property="og:title" content="ChatLume Analyzer - Private WhatsApp Chat Analytics">
     <meta property="og:description" content="Explore WhatsApp chat analytics locally with no server upload.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://chatlume.parassharma.in/public/analyzer.html">
+    <meta property="og:url" content="https://chatlume.parassharma.in/analyzer">
     <meta property="og:image" content="https://chatlume.parassharma.in/assets/icon-512.png">
     <meta property="og:image:alt" content="ChatLume app icon">
     <meta name="twitter:card" content="summary">
@@ -22,15 +22,17 @@
     <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../assets/icon-192.png">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/auth.js" defer></script>
     <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
 </head>
 <body class="page-layout">
     <nav class="landing-nav">
-        <div class="logo"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</div>
+        <a class="logo" href="/" style="text-decoration:none"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</a>
         <div class="nav-links">
-            <a href="../index.html">Home</a>
-            <a href="./viewer.html">Viewer</a>
-            <a href="./wrapped.html">Wrapped</a>
+            <a href="/viewer">Viewer</a>
+            <a href="/analyzer">Analyzer</a>
+            <a href="/pricing">Pricing</a>
+            <div class="auth-nav-slot"></div>
         </div>
     </nav>
     <main class="content-container">
@@ -39,10 +41,53 @@
             <p>Deep dive into your message frequency, daily activity, and text habits.</p>
         </div>
         <div class="upload-box-large">
-            <p>Full analytics are integrated directly into our core tool. Head to the <a href="viewer.html" style="color: var(--primary); font-weight: bold; text-decoration: none;">Viewer</a>, upload your chat, and open the Analytics drawer (<i class="ph ph-chart-pie-slice"></i>) to view your deep dive!</p>
+            <p>Full analytics are integrated directly into our core tool. Head to the <a href="/viewer" style="color: var(--primary); font-weight: bold; text-decoration: none;">Viewer</a>, upload your chat, and open the Analytics drawer (<i class="ph ph-chart-pie-slice"></i>) to view your deep dive!</p>
             <br>
-            <a href="./viewer.html" class="btn-primary" style="display: inline-block;">Open Analytics Tool</a>
+            <a href="/viewer" class="btn-primary" style="display: inline-block;">Open Analytics Tool</a>
+        </div>
+
+        <!-- Pro analytics teaser -->
+        <div id="pro-teaser" style="margin-top:32px;position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);">
+            <div style="filter:blur(4px);pointer-events:none;user-select:none;background:var(--bg-sidebar);padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div style="background:var(--bg-input);border-radius:16px;padding:20px;">
+                    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">RESPONSE TIME</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--primary);">4.2 min</div>
+                    <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">avg. reply time</div>
+                </div>
+                <div style="background:var(--bg-input);border-radius:16px;padding:20px;">
+                    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">CHAT STREAK</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--primary);">47 days</div>
+                    <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">longest streak</div>
+                </div>
+                <div style="background:var(--bg-input);border-radius:16px;padding:20px;">
+                    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">WORD FREQUENCY</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--primary);">haha</div>
+                    <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">most used word</div>
+                </div>
+                <div style="background:var(--bg-input);border-radius:16px;padding:20px;">
+                    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px;">PEAK DAY</div>
+                    <div style="font-size:28px;font-weight:800;color:var(--primary);">Saturday</div>
+                    <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">most active day</div>
+                </div>
+            </div>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,20,26,0.7);backdrop-filter:blur(2px);">
+                <i class="ph-fill ph-lock-simple" style="font-size:32px;color:var(--primary)"></i>
+                <div style="font-size:18px;font-weight:700;">Pro Analytics</div>
+                <div style="font-size:14px;color:var(--text-secondary);text-align:center;max-width:280px;line-height:1.5;">Response times, streaks, word frequency, and more — available on Pro.</div>
+                <a href="/pricing" style="background:var(--primary);color:#fff;padding:10px 24px;border-radius:20px;text-decoration:none;font-weight:600;font-size:14px;margin-top:4px;">
+                    <i class="ph ph-lightning"></i> Upgrade to Pro
+                </a>
+            </div>
         </div>
     </main>
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div><h4>ChatLume</h4><p>Private. Local. Beautiful.</p></div>
+            <div><h4>Product</h4><a href="/viewer">Viewer</a><a href="/analyzer">Analyzer</a><a href="/wrapped">Wrapped</a><a href="/pricing">Pricing</a></div>
+            <div><h4>Resources</h4><a href="/how-to-export">How to Export</a><a href="/how-to-use">How to Use</a><a href="/how-it-works">How it Works</a><a href="/privacy">Privacy</a></div>
+            <div><h4>Account</h4><a href="/login">Sign in</a><a href="/signup">Sign up</a><a href="/account">Dashboard</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 ChatLume. Your chats never leave your device.</p></div>
+    </footer>
 </body>
 </html>

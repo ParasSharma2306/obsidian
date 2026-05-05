@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00a884">
-    <title>How To Use ChatLume</title>
-    <meta name="description" content="Learn how to use ChatLume to view WhatsApp exports locally.">
+    <title>How to Use ChatLume</title>
+    <meta name="description" content="Learn how to use ChatLume to view and analyze your WhatsApp and Instagram chats privately.">
     <meta name="author" content="Paras Sharma">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://chatlume.parassharma.in/public/how-to-use.html">
+    <link rel="canonical" href="https://chatlume.parassharma.in/how-to-use">
     <meta property="og:site_name" content="ChatLume">
-    <meta property="og:title" content="How To Use ChatLume">
-    <meta property="og:description" content="Learn how to use ChatLume to view WhatsApp exports locally.">
+    <meta property="og:title" content="How to Use ChatLume">
+    <meta property="og:description" content="Step-by-step guide to viewing and analyzing chats in ChatLume.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://chatlume.parassharma.in/public/how-to-use.html">
+    <meta property="og:url" content="https://chatlume.parassharma.in/how-to-use">
     <meta property="og:image" content="https://chatlume.parassharma.in/assets/icon-512.png">
     <meta property="og:image:alt" content="ChatLume app icon">
     <meta name="twitter:card" content="summary">
@@ -22,22 +22,307 @@
     <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../assets/icon-192.png">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/auth.js" defer></script>
     <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
+    <style>
+        .use-page { max-width: 760px; margin: 60px auto; padding: 0 20px 80px; }
+        .page-eyebrow {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .page-title { font-size: 36px; font-weight: 800; margin-bottom: 10px; }
+        .page-sub { font-size: 16px; color: var(--text-secondary); margin-bottom: 48px; line-height: 1.6; }
+
+        .platform-section { margin-bottom: 52px; }
+        .platform-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .platform-heading i { font-size: 26px; color: var(--primary); }
+        .platform-divider {
+            height: 2px;
+            background: linear-gradient(to right, var(--primary), transparent);
+            border: none;
+            margin-bottom: 28px;
+            opacity: 0.3;
+        }
+
+        .steps { list-style: none; margin: 0 0 20px; padding: 0; }
+        .steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .steps li:last-child { border-bottom: none; }
+        .step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(0,168,132,0.12);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .steps strong { color: var(--text-primary); }
+
+        .tip-box {
+            display: flex;
+            gap: 12px;
+            background: rgba(0,168,132,0.07);
+            border: 1px solid rgba(0,168,132,0.2);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .tip-box i { font-size: 20px; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
+        .tip-box strong { color: var(--text-primary); }
+
+        /* Formats table */
+        .formats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0 32px;
+        }
+        .format-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+        }
+        .format-card code {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .format-card p { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+
+        /* FAQ */
+        .faq-section { margin-top: 48px; }
+        .faq-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 18px 0;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .faq-a { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Tips */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .tips-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .tips-card i { font-size: 22px; color: var(--primary); flex-shrink: 0; }
+        .tips-card .tip-body .tip-t { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .tips-card .tip-body p { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+
+        @media (max-width: 600px) {
+            .formats-grid { grid-template-columns: 1fr 1fr; }
+            .tips-grid { grid-template-columns: 1fr; }
+            .page-title { font-size: 28px; }
+            .platform-heading { font-size: 19px; }
+        }
+        @media (max-width: 380px) {
+            .formats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body class="page-layout">
     <nav class="landing-nav">
-        <div class="logo"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</div>
-        <div class="nav-links"><a href="../index.html">Home</a><a href="viewer.html">Viewer</a></div>
+        <a class="logo" href="/" style="text-decoration:none"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</a>
+        <div class="nav-links">
+            <a href="/viewer">Viewer</a>
+            <a href="/analyzer">Analyzer</a>
+            <a href="/pricing">Pricing</a>
+            <div class="auth-nav-slot"></div>
+        </div>
     </nav>
-    <main class="content-container article-layout">
-        <h1>How to Use ChatLume</h1>
-        <ol>
-            <li>Navigate to the <a href="viewer.html">Viewer tool</a>.</li>
-            <li>Enter your exact Display Name as it appears in the chat.</li>
-            <li>Click "Browse" or Drag & Drop your exported WhatsApp <code>.txt</code> or <code>.zip</code> file.</li>
-            <li>Wait a moment for the local parsing engine to organize your messages.</li>
-            <li>Scroll, search, and analyze! Use the top-left menu icons to access your Profile, Analytics, and App Settings.</li>
-        </ol>
-    </main>
+
+    <div class="use-page">
+        <p class="page-eyebrow"><i class="ph ph-book-open"></i> User Guide</p>
+        <h1 class="page-title">How to use ChatLume</h1>
+        <p class="page-sub">ChatLume runs entirely in your browser. Your chat files are never uploaded to any server.</p>
+
+        <!-- ── Supported formats ── -->
+        <div class="formats-grid">
+            <div class="format-card">
+                <code>.txt</code>
+                <p>Plain text WhatsApp export. Fastest to load, smallest size.</p>
+            </div>
+            <div class="format-card">
+                <code>.zip</code>
+                <p>WhatsApp or Instagram ZIP export. Enables inline media viewing.</p>
+            </div>
+            <div class="format-card">
+                <code>.json</code>
+                <p>Instagram JSON export. Place inside its ZIP or load the file directly.</p>
+            </div>
+        </div>
+
+        <!-- ── WhatsApp ── -->
+        <section class="platform-section">
+            <h2 class="platform-heading"><i class="ph-fill ph-whatsapp-logo"></i> WhatsApp</h2>
+            <hr class="platform-divider">
+
+            <ol class="steps">
+                <li><span class="step-num">1</span><span>Go to the <a href="/viewer" style="color:var(--primary)">Viewer</a> page.</span></li>
+                <li><span class="step-num">2</span><span>In the <strong>Display Name</strong> field, type your name <em>exactly</em> as it appears in the chat export — this is how ChatLume identifies which messages are yours.</span></li>
+                <li><span class="step-num">3</span><span>Click <strong>Choose file</strong> or drag and drop your <code>.txt</code> or <code>.zip</code> file into the drop zone.</span></li>
+                <li><span class="step-num">4</span><span>Wait a moment while ChatLume parses the chat in your browser. No data leaves your device.</span></li>
+                <li><span class="step-num">5</span><span>Your conversation loads. Use the <strong>sidebar icons</strong> (top-left) to access Analytics, Wrapped, and Settings.</span></li>
+                <li><span class="step-num">6</span><span>Use the <strong>search bar</strong> at the top to find specific messages, or use the <strong>date picker</strong> to jump to any day.</span></li>
+            </ol>
+
+            <div class="tip-box">
+                <i class="ph-fill ph-info"></i>
+                <span><strong>Display name tip:</strong> Open your export <code>.txt</code> in a text editor and look at the very first few messages. Copy the name exactly (including any emojis or special characters).</span>
+            </div>
+        </section>
+
+        <!-- ── Instagram ── -->
+        <section class="platform-section">
+            <h2 class="platform-heading"><i class="ph-fill ph-instagram-logo"></i> Instagram</h2>
+            <hr class="platform-divider">
+
+            <ol class="steps">
+                <li><span class="step-num">1</span><span>Download your Instagram data as a <strong>JSON ZIP</strong> (see <a href="/how-to-export" style="color:var(--primary)">How to Export</a>).</span></li>
+                <li><span class="step-num">2</span><span>Go to the <a href="/viewer" style="color:var(--primary)">Viewer</a> page and drag the entire <strong>ZIP file</strong> into the drop zone — do not unzip it.</span></li>
+                <li><span class="step-num">3</span><span>ChatLume automatically finds the <code>messages/inbox/</code> folder inside the ZIP and lists all your conversations.</span></li>
+                <li><span class="step-num">4</span><span>Select the conversation you want to view from the list.</span></li>
+                <li><span class="step-num">5</span><span>Browse, search, and analyze your messages just like with WhatsApp.</span></li>
+            </ol>
+
+            <div class="tip-box">
+                <i class="ph-fill ph-info"></i>
+                <span><strong>Not working?</strong> Make sure you requested the export in <strong>JSON format</strong>, not HTML. HTML exports have a completely different structure that ChatLume can't read.</span>
+            </div>
+        </section>
+
+        <!-- ── Tips ── -->
+        <section>
+            <h2 class="faq-title">Tips for the best experience</h2>
+            <div class="tips-grid">
+                <div class="tips-card">
+                    <i class="ph-fill ph-moon-stars"></i>
+                    <div class="tip-body">
+                        <div class="tip-t">Dark mode</div>
+                        <p>Toggle between dark and light themes in Settings (gear icon in the viewer sidebar).</p>
+                    </div>
+                </div>
+                <div class="tips-card">
+                    <i class="ph-fill ph-magnifying-glass"></i>
+                    <div class="tip-body">
+                        <div class="tip-t">Search</div>
+                        <p>Press <kbd style="background:var(--bg-elevated);padding:1px 6px;border-radius:4px;font-size:12px">Ctrl+F</kbd> or use the search bar to find any message instantly.</p>
+                    </div>
+                </div>
+                <div class="tips-card">
+                    <i class="ph-fill ph-calendar-blank"></i>
+                    <div class="tip-body">
+                        <div class="tip-t">Date jump</div>
+                        <p>Click any date in the chat to reveal the date-jump picker and skip to any point in history.</p>
+                    </div>
+                </div>
+                <div class="tips-card">
+                    <i class="ph-fill ph-chart-bar"></i>
+                    <div class="tip-body">
+                        <div class="tip-t">Analytics</div>
+                        <p>Open the Analytics panel for message counts, most active days, emoji stats, and more.</p>
+                    </div>
+                </div>
+                <div class="tips-card">
+                    <i class="ph-fill ph-sparkle"></i>
+                    <div class="tip-body">
+                        <div class="tip-t">Wrapped</div>
+                        <p>Generate a shareable year-in-review card from your chat highlights.</p>
+                    </div>
+                </div>
+                <div class="tips-card">
+                    <i class="ph-fill ph-device-mobile"></i>
+                    <div class="tip-body">
+                        <div class="tip-t">Install as app</div>
+                        <p>ChatLume is a PWA — add it to your home screen for offline use and a native-app feel.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FAQ ── -->
+        <section class="faq-section">
+            <h2 class="faq-title">Frequently asked questions</h2>
+
+            <div class="faq-item">
+                <p class="faq-q">Is my chat data uploaded anywhere?</p>
+                <p class="faq-a">No. ChatLume processes everything locally in your browser using JavaScript. Your files never leave your device and nothing is sent to any server.</p>
+            </div>
+            <div class="faq-item">
+                <p class="faq-q">Why does ChatLume need my Display Name?</p>
+                <p class="faq-a">WhatsApp exports don't mark which participant is "you". ChatLume uses the name you enter to style your messages on the right and the other person's on the left, matching the original WhatsApp look.</p>
+            </div>
+            <div class="faq-item">
+                <p class="faq-q">My messages appear but the sender is wrong / all on one side.</p>
+                <p class="faq-a">This means your Display Name doesn't exactly match what's in the export. Open the <code>.txt</code> file, copy your name character-for-character (including any emojis), and paste it into the Display Name field.</p>
+            </div>
+            <div class="faq-item">
+                <p class="faq-q">Can I view group chats?</p>
+                <p class="faq-a">Yes. Export any group chat from WhatsApp the same way. Group chats with many participants may take slightly longer to parse.</p>
+            </div>
+            <div class="faq-item">
+                <p class="faq-q">What's the difference between Free and Pro?</p>
+                <p class="faq-a">Free gives you full access to the viewer, search, basic analytics, and Wrapped. Pro adds advanced analytics, cross-session history, multi-chat comparison, and more. See the <a href="/pricing" style="color:var(--primary)">Pricing page</a> for a full comparison.</p>
+            </div>
+        </section>
+
+        <div style="text-align:center;margin-top:48px">
+            <a href="/viewer" style="display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#fff;font-weight:600;font-size:15px;padding:13px 28px;border-radius:24px;text-decoration:none;box-shadow:0 4px 10px rgba(0,168,132,0.3)">
+                <i class="ph ph-folder-open"></i> Open Viewer
+            </a>
+        </div>
+    </div>
+
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div><h4>ChatLume</h4><p>Private. Local. Beautiful.</p></div>
+            <div><h4>Product</h4><a href="/viewer">Viewer</a><a href="/analyzer">Analyzer</a><a href="/wrapped">Wrapped</a><a href="/pricing">Pricing</a></div>
+            <div><h4>Resources</h4><a href="/how-to-export">How to Export</a><a href="/how-to-use">How to Use</a><a href="/how-it-works">How it Works</a><a href="/privacy">Privacy</a></div>
+            <div><h4>Account</h4><a href="/login">Sign in</a><a href="/signup">Sign up</a><a href="/account">Dashboard</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 ChatLume. Your chats never leave your device.</p></div>
+    </footer>
 </body>
 </html>

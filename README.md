@@ -2,6 +2,22 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
+## What's Changing
+
+ChatLume is transitioning from a fully static site to a full-stack Express + MongoDB application.
+
+**The static version at [chatlume.parassharma.in](https://chatlume.parassharma.in) is live and will always remain available.** Nothing about that experience is going away.
+
+The new version adds:
+
+- User accounts with secure authentication
+- Premium features for power users
+- Deeper analytics and history across sessions
+
+**The core philosophy does not change.** All chat processing happens locally in your browser. Your exported chat files, messages, media, and generated Wrapped images never leave your device and never touch the server. The backend exists only to support accounts and preferences — not to process chat data.
+
+---
+
 ChatLume is a fully static, privacy-first WhatsApp export viewer, analyzer, and Wrapped generator. It runs entirely in the browser, reads exported `.txt` files or `.zip` exports locally, and renders them as a polished WhatsApp-style chat interface with search, analytics, media preview, and shareable chat summaries.
 
 Live demo: https://chatlume.parassharma.in
