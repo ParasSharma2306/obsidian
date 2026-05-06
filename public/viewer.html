@@ -6,23 +6,22 @@
     <meta name="theme-color" content="#111b21">     
     <meta name="apple-mobile-web-app-capable" content="yes">     
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">     
-    <title>WhatsApp Viewer | ChatLume</title>     
-    <meta name="description" content="Open exported WhatsApp .txt and .zip files locally with ChatLume Viewer. Search messages, view media, and analyze chats privately without uploading data.">     
-    <meta name="author" content="Paras Sharma">     
-    <meta name="application-name" content="ChatLume">     
-    <meta name="robots" content="index, follow">     
+    <title>Chat Viewer — ChatLume</title>
+    <meta name="description" content="View your WhatsApp and Instagram chat exports privately in your browser. Open .txt and .zip files — no uploads, no server, 100% local.">
+    <meta name="author" content="ChatLume">
+    <meta name="application-name" content="ChatLume">
+    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chatlume.parassharma.in/viewer">
-    <meta property="og:site_name" content="ChatLume">     
-    <meta property="og:title" content="ChatLume Viewer - Private Local WhatsApp Chat Reader">     
-    <meta property="og:description" content="Open WhatsApp exports locally, search messages, view ZIP media, and generate analytics without uploads.">     
-    <meta property="og:type" content="website">     
-    <meta property="og:url" content="https://chatlume.parassharma.in/public/viewer.html">     
-    <meta property="og:image" content="https://chatlume.parassharma.in/assets/icon-512.png">     
-    <meta property="og:image:alt" content="ChatLume app icon">     
-    <meta name="twitter:card" content="summary">     
-    <meta name="twitter:title" content="ChatLume Viewer - Private WhatsApp Chat Reader">     
-    <meta name="twitter:description" content="View and analyze WhatsApp exports locally in your browser.">     
-    <meta name="twitter:image" content="https://chatlume.parassharma.in/assets/icon-512.png">     
+    <meta property="og:site_name" content="ChatLume">
+    <meta property="og:title" content="Chat Viewer — ChatLume">
+    <meta property="og:description" content="View WhatsApp and Instagram chat exports privately. 100% local, no uploads.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chatlume.parassharma.in/viewer">
+    <meta property="og:image" content="https://chatlume.parassharma.in/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chat Viewer — ChatLume">
+    <meta name="twitter:description" content="View WhatsApp and Instagram chat exports privately. 100% local, no uploads.">
+    <meta name="twitter:image" content="https://chatlume.parassharma.in/og-image.png">     
     <link rel="stylesheet" href="../css/style.css">     
     <link rel="manifest" href="../manifest.json">     
     <link rel="apple-touch-icon" href="../assets/icon-192.png">     
@@ -419,6 +418,26 @@
                 </div>             
             </div>         
         </div>                  
+        <!-- Media lightbox modal -->
+        <div class="media-modal" id="media-modal" hidden>
+            <button class="media-modal-backdrop" id="media-modal-backdrop" type="button"></button>
+            <div class="media-modal-dialog" role="dialog" aria-modal="true">
+                <div class="media-modal-header">
+                    <div>
+                        <h2>Media</h2>
+                        <p id="media-modal-subtitle"></p>
+                    </div>
+                    <div class="media-modal-actions">
+                        <a id="media-download-link" download style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);color:var(--text-primary);text-decoration:none" title="Download">
+                            <i class="ph ph-download-simple"></i>
+                        </a>
+                        <button id="media-modal-close" type="button"><i class="ph ph-x"></i></button>
+                    </div>
+                </div>
+                <div class="media-modal-body" id="media-modal-body"></div>
+            </div>
+        </div>
+
         <div class="processing-overlay" id="processing-overlay" hidden>             
             <div class="processing-card" role="status">                 
                 <i class="ph-fill ph-spinner-gap processing-spinner"></i>                 

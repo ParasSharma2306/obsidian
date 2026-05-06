@@ -54,9 +54,12 @@ app.get('/how-to-use',              (req, res) => res.sendFile(path.join(__dirna
 app.get('/how-it-works',            (req, res) => res.sendFile(path.join(__dirname, 'public/how-it-works.html')));
 app.get('/privacy',                 (req, res) => res.sendFile(path.join(__dirname, 'public/privacy.html')));
 
-// Fallback: serve index.html for any unmatched route (Express 5 named wildcard)
+// Serve og-image.png from public directory
+app.get('/og-image.png', (req, res) => res.sendFile(path.join(__dirname, 'public/og-image.png')));
+
+// 404 handler for unmatched routes
 app.get('/{*splat}', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.status(404).sendFile(path.join(__dirname, 'public/404.html'));
 });
 
 app.listen(PORT, () => {
