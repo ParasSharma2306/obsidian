@@ -196,7 +196,8 @@
                     btn.innerHTML = '<i class="ph ph-sign-in"></i> Sign in';
                     return;
                 }
-                window.location.href = '/account';
+                const redirect = new URLSearchParams(window.location.search).get('redirect');
+                window.location.href = redirect || '/account';
             } catch {
                 showError('Network error. Please try again.');
                 btn.disabled = false;

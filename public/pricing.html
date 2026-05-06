@@ -521,8 +521,8 @@
             try {
                 const res = await fetch('/api/auth/me');
                 if (!res.ok) {
-                    // Not logged in — send to signup
-                    proCta.addEventListener('click', () => { window.location.href = '/signup'; });
+                    // Not logged in — send to login with redirect back to pricing
+                    proCta.addEventListener('click', () => { window.location.href = '/login?redirect=/pricing'; });
                     return;
                 }
                 const user  = await res.json();
@@ -538,7 +538,7 @@
                     proCta.addEventListener('click', startCheckout);
                 }
             } catch {
-                proCta.addEventListener('click', () => { window.location.href = '/signup'; });
+                proCta.addEventListener('click', () => { window.location.href = '/login?redirect=/pricing'; });
             }
         }
 
