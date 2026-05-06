@@ -178,6 +178,20 @@
         }
         .error-banner.show { display: flex; }
 
+        .success-banner {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,168,132,0.1);
+            border: 1px solid rgba(0,168,132,0.3);
+            color: var(--primary);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            margin-bottom: 16px;
+        }
+        .success-banner.show { display: flex; }
+
         /* ── nav ── */
         .back-link {
             display: inline-flex;
@@ -233,6 +247,11 @@
                 <div class="skel-block" style="width:55%;height:12px;margin-bottom:20px"></div>
                 <div class="skel-block" style="width:100%;height:48px;border-radius:24px"></div>
             </div>
+        </div>
+
+        <div id="success" class="success-banner">
+            <i class="ph-fill ph-check-circle"></i>
+            <span>You're now on Pro! Enjoy all premium features.</span>
         </div>
 
         <div id="error" class="error-banner">
@@ -310,6 +329,13 @@
         function showPageError(msg) {
             errText.textContent = msg;
             errBanner.classList.add('show');
+        }
+
+        // Show success banner when redirected back from Dodo checkout
+        if (new URLSearchParams(window.location.search).get('success') === 'true') {
+            document.getElementById('success').classList.add('show');
+            // Clean up URL without reload
+            history.replaceState(null, '', '/account');
         }
 
         async function loadAccount() {

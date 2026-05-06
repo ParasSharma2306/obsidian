@@ -561,8 +561,15 @@
                 document.querySelectorAll(".ia-pro-content").forEach(el => { el.style.filter = ""; });
             }
 
-            // Download button handlers
+            // Download button handlers (gated behind Pro)
             const doDownload = () => downloadCard(stats, isPro);
+            if (!isPro) {
+                [$id("ia-dl-top"), $id("ia-dl-bottom")].forEach(btn => {
+                    if (!btn) return;
+                    btn.innerHTML = '<i class="ph-fill ph-lock-simple"></i> Pro — Download Card';
+                    btn.style.cssText = 'background:rgba(131,58,180,0.12);color:#C13584;box-shadow:none;border:1px solid rgba(193,53,132,0.25)';
+                });
+            }
             $id("ia-dl-top").addEventListener("click", doDownload);
             $id("ia-dl-bottom").addEventListener("click", doDownload);
 
@@ -833,6 +840,10 @@
 
         // ── Wrapped Card ─────────────────────────────────────────────────────────
         function downloadCard(stats, isPro) {
+            if (!isPro) {
+                window.location.href = '/pricing';
+                return;
+            }
             const btn = $id("ia-dl-bottom");
             const origText = btn.innerHTML;
             btn.innerHTML = '<i class="ph ph-circle-notch" style="animation:spin .8s linear infinite"></i> Generating…';

@@ -11,13 +11,8 @@ router.post('/create-checkout', verifyToken, async (req, res) => {
 
     const dodo = new DodoPayments({
       bearerToken: process.env.DODO_API_KEY,
-      environment: 'test_mode',
+      environment: process.env.NODE_ENV === 'production' ? 'live_mode' : 'test_mode',
     });
-
-    console.log('req.user:', JSON.stringify(req.user));
-    console.log('email value:', req.user.email);
-    console.log('email type:', typeof req.user.email);
-    console.log('customer object:', JSON.stringify({ email: req.user.email }));
 
     let userEmail = req.user.email;
     if (!userEmail) {
@@ -39,11 +34,37 @@ router.post('/create-checkout', verifyToken, async (req, res) => {
   }
 });
 
-// POST /api/payments/webhook  (public — signature verification temporarily skipped)
+// PAYMENTS TEST CHECKLIST
+// [ ] DODO_WEBHOOK_SECRET set in .env as DODO_WEBHOOK_SECRET
+// [ ] Webhook URL registered in Dodo dashboard: https://chatlume.parassharma.in/api/payments/webhook
+// [ ] Test payment fired using Dodo test mode
+// [ ] isPro flips to true in MongoDB after test payment (subscription.active event)
+// [ ] /api/auth/me returns subscription.status === 'pro' after flip
+// [ ] account.html shows Pro badge and pro-section
+// [ ] Cancellation event (subscription.cancelled/expired) sets subscription.status back to 'free'
+
+// POST /api/payments/webhook  (public — verified via standardwebhooks HMAC)
 router.post('/webhook', async (req, res) => {
+  const rawBody = req.body.toString('utf8');
+
+  // Verify Dodo webhook signature (standard-webhooks spec: webhook-id/timestamp/signature headers)
+  const secret = process.env.DODO_WEBHOOK_SECRET;
+  if (!secret) {
+    console.warn('Webhook: DODO_WEBHOOK_SECRET not set — skipping signature verification (unsafe)');
+  } else {
+    try {
+      const { Webhook } = require('standardwebhooks');
+      const wh = new Webhook(secret);
+      wh.verify(rawBody, req.headers);
+    } catch (err) {
+      console.error('Webhook signature verification failed:', err.message);
+      return res.status(401).json({ error: 'Invalid webhook signature' });
+    }
+  }
+
   let payload;
   try {
-    payload = JSON.parse(req.body.toString('utf8'));
+    payload = JSON.parse(rawBody);
   } catch (err) {
     console.error('Webhook: invalid JSON body:', err.message);
     return res.status(200).json({ received: true });

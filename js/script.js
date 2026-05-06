@@ -1,5 +1,6 @@
 const BATCH_SIZE = 60;
 const MAX_RENDERED_ITEMS = 180;
+const WA_FREE_LIMIT = 500;
 const COLORS = ["#e542a3", "#1f7aec", "#d44638", "#2ecc71", "#f39c12", "#9b59b6", "#3498db", "#1abc9c"];
 const STORAGE_KEYS = {
     theme: "chatlume-theme",
@@ -24,6 +25,7 @@ const state = {
     filteredMessages: [],
     messageOnlyCount: 0,
     myName: "",
+    isPro: false,
     renderRange: { start: 0, end: 0 },
     colorMap: {},
     senderStats: {},
@@ -55,7 +57,7 @@ let deferredPrompt;
 const $ = (id) => document.getElementById(id);
 const q = (selector, root = document) => root.querySelector(selector);
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     loadSavedSettings();
     bindUI();
     applySavedTheme();
@@ -66,6 +68,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     registerServiceWorker();
     setupPWAInstall();
+
+    try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+            const user = await res.json();
+            state.isPro = user?.subscription?.status === "pro";
+        }
+    } catch {}
 });
 
 window.addEventListener("resize", () => {
@@ -1030,7 +1040,19 @@ function renderChatList() {
         }
 
         if (item.type === "system") {
-            html += `<div class="system-msg" id="${item.id}">${linkifyAndHighlight(item.content)}</div>`;
+            if (item.content.startsWith("__WA_LIMIT__:")) {
+                const total = parseInt(item.content.split(":")[1], 10);
+                html += `
+                    <div class="wa-limit-banner" id="${item.id}">
+                        <i class="ph-fill ph-lock-simple"></i>
+                        <div>
+                            <strong>Showing last ${WA_FREE_LIMIT.toLocaleString()} of ${total.toLocaleString()} messages.</strong>
+                            <a href="/pricing">Upgrade to Pro</a> to view the full conversation.
+                        </div>
+                    </div>`;
+            } else {
+                html += `<div class="system-msg" id="${item.id}">${linkifyAndHighlight(item.content)}</div>`;
+            }
             lastSender = null;
             continue;
         }
@@ -2028,6 +2050,25 @@ async function parseChatData(text) {
 
     state.filteredMessages = state.messages;
     state.inferredDateOrder = inferDateOrder(state.messages.filter(e => e.type === "date").map(e => e.content));
+
+    // Freemium gate: truncate to the last WA_FREE_LIMIT messages for non-Pro users
+    if (!state.isPro && state.messageOnlyCount > WA_FREE_LIMIT) {
+        const totalCount = state.messageOnlyCount;
+        // Walk backwards to find the cut index for the (WA_FREE_LIMIT)th-to-last msg entry
+        let msgSeen = 0;
+        let cutIndex = 0;
+        for (let i = state.messages.length - 1; i >= 0; i--) {
+            if (state.messages[i].type === "msg") {
+                msgSeen++;
+                if (msgSeen === WA_FREE_LIMIT) { cutIndex = i; break; }
+            }
+        }
+        state.messages = state.messages.slice(cutIndex);
+        state.messages.unshift({ type: "system", id: "wa-limit-banner", content: `__WA_LIMIT__:${totalCount}` });
+        state.filteredMessages = state.messages;
+        state.messageOnlyCount = WA_FREE_LIMIT;
+    }
+
     state.renderRange = { start: Math.max(0, state.filteredMessages.length - MAX_RENDERED_ITEMS), end: state.filteredMessages.length };
     generateStats();
 }

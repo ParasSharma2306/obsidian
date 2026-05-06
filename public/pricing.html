@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00a884">
     <title>Pricing | ChatLume</title>
-    <meta name="description" content="ChatLume is free to use. Upgrade to Pro for advanced analytics and premium features.">
+    <meta name="description" content="ChatLume is free to use. Upgrade to Pro for full chat history, rich analytics, and shareable stats. ₹149/month, cancel anytime.">
     <meta name="author" content="Paras Sharma">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chatlume.parassharma.in/pricing">
@@ -16,117 +16,190 @@
     <script src="../js/auth.js" defer></script>
     <style>
         body {
-            background-image: radial-gradient(circle at top, rgba(0,168,132,0.08), transparent 40%);
+            background-image: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(0,168,132,0.13), transparent 55%);
         }
+
+        /* ── Page ── */
         .pricing-page {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
-            padding: 64px 20px 80px;
+            padding: 72px 20px 100px;
         }
-        .pricing-header {
+
+        /* ── Hero ── */
+        .pricing-hero {
             text-align: center;
-            margin-bottom: 56px;
+            margin-bottom: 60px;
         }
-        .pricing-header h1 {
-            font-size: 42px;
+        .pricing-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,168,132,0.1);
+            border: 1px solid rgba(0,168,132,0.22);
+            color: var(--primary);
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 22px;
+        }
+        .pricing-hero h1 {
+            font-size: 48px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 14px;
+            letter-spacing: -1px;
+            line-height: 1.08;
+            margin-bottom: 16px;
         }
-        .pricing-header p {
+        .pricing-hero p {
             font-size: 17px;
             color: var(--text-secondary);
-            max-width: 480px;
+            max-width: 420px;
             margin: 0 auto;
-            line-height: 1.6;
+            line-height: 1.65;
         }
+
+        /* ── Cards grid ── */
         .pricing-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            gap: 20px;
+            align-items: start;
         }
-        @media (max-width: 680px) {
-            .pricing-grid { grid-template-columns: 1fr; }
-            .pricing-header h1 { font-size: 30px; }
-        }
+
+        /* ── Card base ── */
         .plan-card {
-            background: var(--bg-sidebar);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 36px 32px;
+            border-radius: 26px;
+            padding: 36px 32px 32px;
             display: flex;
             flex-direction: column;
-        }
-        .plan-card.featured {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 1px var(--primary), 0 12px 40px rgba(0,168,132,0.15);
             position: relative;
+            transition: box-shadow 0.25s, border-color 0.25s;
         }
-        .featured-tag {
+
+        .plan-card.free {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+        }
+        .plan-card.free:hover {
+            border-color: rgba(134,150,160,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .plan-card.pro {
+            background: linear-gradient(155deg, rgba(0,168,132,0.07) 0%, var(--bg-sidebar) 45%);
+            border: 1px solid rgba(0,168,132,0.38);
+            box-shadow:
+                0 0 0 1px rgba(0,168,132,0.1),
+                0 24px 64px rgba(0,168,132,0.1),
+                0 4px 20px rgba(0,0,0,0.3);
+            padding-top: 48px; /* room for badge */
+        }
+        .plan-card.pro:hover {
+            box-shadow:
+                0 0 0 1px rgba(0,168,132,0.18),
+                0 28px 72px rgba(0,168,132,0.14),
+                0 4px 20px rgba(0,0,0,0.35);
+        }
+
+        /* Most Popular badge */
+        .badge-popular {
             position: absolute;
             top: -13px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--primary);
             color: #fff;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            padding: 4px 16px;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            padding: 4px 18px;
             border-radius: 20px;
             white-space: nowrap;
-            letter-spacing: .04em;
         }
+
+        /* Plan name */
         .plan-name {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .08em;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
+            letter-spacing: .12em;
+            color: var(--text-muted);
+            margin-bottom: 14px;
         }
-        .plan-price {
-            font-size: 40px;
+        .plan-card.pro .plan-name { color: var(--primary); }
+
+        /* Price */
+        .plan-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .plan-price-amount {
+            font-size: 48px;
             font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 4px;
+            letter-spacing: -2px;
+            line-height: 1;
         }
-        .plan-price span {
-            font-size: 16px;
+        .plan-price-period {
+            font-size: 15px;
             font-weight: 500;
             color: var(--text-secondary);
             letter-spacing: 0;
         }
-        .plan-desc {
+
+        /* Tagline */
+        .plan-tagline {
             font-size: 14px;
             color: var(--text-secondary);
-            margin-bottom: 28px;
-            line-height: 1.5;
+            line-height: 1.55;
+            margin-bottom: 26px;
+            min-height: 44px;
         }
-        .feature-list {
+
+        /* Divider */
+        .plan-divider {
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 22px;
+        }
+        .plan-card.pro .plan-divider { background: rgba(0,168,132,0.18); }
+
+        /* Feature list */
+        .plan-features {
             list-style: none;
             flex: 1;
-            margin-bottom: 32px;
+            margin-bottom: 30px;
         }
-        .feature-list li {
+        .plan-features li {
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            font-size: 14.5px;
+            font-size: 14px;
             color: var(--text-primary);
-            padding: 7px 0;
+            padding: 9px 0;
             border-bottom: 1px solid var(--border);
+            line-height: 1.45;
         }
-        .feature-list li:last-child { border-bottom: 0; }
-        .feature-list li i {
+        .plan-card.pro .plan-features li { border-bottom-color: rgba(0,168,132,0.09); }
+        .plan-features li:last-child { border-bottom: 0; }
+        .plan-features li.feat-na { color: var(--text-muted); }
+        .plan-features li i {
             font-size: 17px;
             flex-shrink: 0;
-            margin-top: 2px;
+            margin-top: 1px;
         }
-        .check { color: var(--primary); }
-        .cross { color: var(--text-muted); }
+        .icon-check { color: var(--primary); }
+        .icon-cross { color: var(--text-muted); opacity: 0.7; }
+
+        /* CTAs */
         .plan-cta {
             width: 100%;
-            padding: 13px;
+            padding: 14px;
             border-radius: 24px;
             font-size: 15px;
             font-weight: 600;
@@ -137,30 +210,153 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+            transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+            font-family: inherit;
         }
         .plan-cta:active { transform: scale(0.98); }
+        .plan-cta:disabled { opacity: 0.6; cursor: wait; pointer-events: none; }
+
         .cta-free {
             background: transparent;
             border: 1px solid var(--border);
-            color: var(--text-primary);
+            color: var(--text-secondary);
         }
         .cta-free:hover { border-color: var(--primary); color: var(--primary); }
+
         .cta-pro {
             background: var(--primary);
             color: #fff;
-            box-shadow: 0 4px 10px rgba(0,168,132,0.3);
+            box-shadow: 0 4px 16px rgba(0,168,132,0.35);
         }
-        .cta-pro:hover { background: var(--primary-hover); }
-        .privacy-note {
+        .cta-pro:hover { background: var(--primary-hover); box-shadow: 0 6px 22px rgba(0,168,132,0.42); }
+
+        .cta-already-pro {
+            background: rgba(0,168,132,0.1);
+            border: 1px solid rgba(0,168,132,0.25);
+            color: var(--primary);
+        }
+        .cta-already-pro:hover { background: rgba(0,168,132,0.15); }
+
+        /* Fine print below Pro CTA */
+        .pro-fine-print {
             text-align: center;
-            margin-top: 40px;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Inline error for CTA */
+        .cta-error {
+            display: none;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255,107,107,0.08);
+            border: 1px solid rgba(255,107,107,0.2);
+            color: #ff8080;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        .cta-error.show { display: flex; }
+
+        /* ── FAQ ── */
+        .faq-section {
+            margin-top: 88px;
+        }
+        .faq-heading {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 36px;
+        }
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        details.faq-item {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        details.faq-item[open] {
+            border-color: rgba(0,168,132,0.28);
+        }
+        details.faq-item summary {
+            list-style: none;
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        details.faq-item summary::-webkit-details-marker { display: none; }
+        details.faq-item summary::after {
+            content: '+';
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--text-muted);
+            line-height: 1;
+            flex-shrink: 0;
+            transition: transform 0.2s, color 0.2s;
+        }
+        details.faq-item[open] summary {
+            color: var(--primary);
+        }
+        details.faq-item[open] summary::after {
+            transform: rotate(45deg);
+            color: var(--primary);
+        }
+        .faq-answer {
+            padding: 14px 22px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        details.faq-item[open] .faq-answer {
+            border-top-color: rgba(0,168,132,0.15);
+        }
+
+        /* ── Trust strip ── */
+        .trust-strip {
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 28px;
+            margin-top: 44px;
+            flex-wrap: wrap;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
             gap: 6px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+        }
+        .trust-item i { color: var(--primary); font-size: 15px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 680px) {
+            .pricing-hero h1 { font-size: 30px; letter-spacing: -0.5px; }
+            .pricing-hero { margin-bottom: 44px; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .plan-price-amount { font-size: 40px; }
+            .plan-card { padding: 32px 24px 28px; }
+            .plan-card.pro { padding-top: 44px; }
         }
     </style>
 </head>
@@ -180,62 +376,103 @@
     </nav>
 
     <div class="pricing-page">
-        <div class="pricing-header">
+
+        <!-- Hero -->
+        <div class="pricing-hero">
+            <div class="pricing-eyebrow">
+                <i class="ph-fill ph-lightning"></i> Pricing
+            </div>
             <h1>Simple, honest pricing</h1>
-            <p>Start for free. Upgrade when you need more. Your chat data stays on your device either way.</p>
+            <p>No ads. No data selling. Pay once a month, cancel anytime.</p>
         </div>
 
+        <!-- Plan cards -->
         <div class="pricing-grid">
+
             <!-- Free -->
-            <div class="plan-card">
+            <div class="plan-card free">
                 <p class="plan-name">Free</p>
-                <div class="plan-price">₹0 <span>/ forever</span></div>
-                <p class="plan-desc">Everything you need to view and explore your chats privately.</p>
-                <ul class="feature-list">
-                    <li><i class="ph-fill ph-check-circle check"></i> WhatsApp .txt &amp; .zip viewer</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Inline media from ZIP exports</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Message search</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Date jump</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Basic analytics</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> ChatLume Wrapped</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Dark &amp; light themes</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> PWA — works offline</li>
-                    <li><i class="ph ph-x-circle cross"></i> Cross-session history</li>
-                    <li><i class="ph ph-x-circle cross"></i> Advanced analytics</li>
-                    <li><i class="ph ph-x-circle cross"></i> Priority support</li>
+                <div class="plan-price-row">
+                    <span class="plan-price-amount">₹0</span>
+                    <span class="plan-price-period">/ forever</span>
+                </div>
+                <p class="plan-tagline">Everything you need to view your chats privately — no account required.</p>
+                <div class="plan-divider"></div>
+                <ul class="plan-features">
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Upload WhatsApp chats</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Upload Instagram DMs</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> View last 500 messages</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Basic stats — message count, top senders</li>
+                    <li class="feat-na"><i class="ph ph-x-circle icon-cross"></i> Full chat history (500+ messages)</li>
+                    <li class="feat-na"><i class="ph ph-x-circle icon-cross"></i> WhatsApp Wrapped — full analytics</li>
+                    <li class="feat-na"><i class="ph ph-x-circle icon-cross"></i> Instagram Wrapped — full analytics</li>
+                    <li class="feat-na"><i class="ph ph-x-circle icon-cross"></i> Shareable stats card</li>
                 </ul>
                 <a class="plan-cta cta-free" href="/viewer">
-                    <i class="ph ph-folder-open"></i> Open Viewer
+                    <i class="ph ph-folder-open"></i> Try for Free
                 </a>
             </div>
 
             <!-- Pro -->
-            <div class="plan-card featured">
-                <div class="featured-tag">Most Popular</div>
+            <div class="plan-card pro">
+                <div class="badge-popular">Most Popular</div>
                 <p class="plan-name">Pro</p>
-                <div class="plan-price">₹149 <span>/ month</span></div>
-                <p class="plan-desc">For power users who want deeper insights and a seamless experience.</p>
-                <ul class="feature-list">
-                    <li><i class="ph-fill ph-check-circle check"></i> Everything in Free</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Cross-session history</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Advanced analytics dashboard</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Multi-chat comparison</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Export analytics as PDF</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Custom Wrapped themes</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Priority support</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Early access to new features</li>
-                    <li><i class="ph-fill ph-check-circle check"></i> Chat never leaves your device</li>
+                <div class="plan-price-row">
+                    <span class="plan-price-amount">₹149</span>
+                    <span class="plan-price-period">/ month</span>
+                </div>
+                <p class="plan-tagline">Full history, rich analytics, and shareable cards. Everything, no limits.</p>
+                <div class="plan-divider"></div>
+                <ul class="plan-features">
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Upload WhatsApp chats</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Upload Instagram DMs</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Full chat history — unlimited messages</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> WhatsApp Wrapped — full analytics</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Instagram Wrapped — full analytics</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Shareable stats card (download / share)</li>
+                    <li><i class="ph-fill ph-check-circle icon-check"></i> Priority support</li>
                 </ul>
-                <a class="plan-cta cta-pro" id="pro-cta" href="/account">
-                    <i class="ph ph-lightning"></i> Get Pro
-                </a>
+                <button class="plan-cta cta-pro" id="pro-cta">
+                    <i class="ph ph-lightning"></i> Get Pro — ₹149/month
+                </button>
+                <div class="cta-error" id="cta-error">
+                    <i class="ph ph-warning-circle"></i>
+                    <span id="cta-error-text"></span>
+                </div>
+                <p class="pro-fine-print">Cancel anytime · Secure payment via Dodo · Your chats never leave your device</p>
             </div>
         </div>
 
-        <p class="privacy-note">
-            <i class="ph-fill ph-shield-check"></i>
-            Your chat files are never uploaded. All processing happens locally in your browser.
-        </p>
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 class="faq-heading">Frequently asked questions</h2>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Is my chat data safe?</summary>
+                    <p class="faq-answer">Yes. Your files are processed locally in your browser and never uploaded to our servers. The only things our server stores are your account email and subscription status.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What counts as "full chat history"?</summary>
+                    <p class="faq-answer">Free users see the last 500 messages from their chat file. Pro users get access to the entire chat — no limit, no matter how long the conversation.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I cancel anytime?</summary>
+                    <p class="faq-answer">Yes. Cancel from your account page anytime. No questions asked. Your Pro access continues until the end of your current billing period.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What payment methods are accepted?</summary>
+                    <p class="faq-answer">Cards and UPI via Dodo Payments — secure and instant. Dodo handles all payment processing; we never see your card details.</p>
+                </details>
+            </div>
+        </div>
+
+        <!-- Trust strip -->
+        <div class="trust-strip">
+            <span class="trust-item"><i class="ph-fill ph-shield-check"></i> Chats never leave your device</span>
+            <span class="trust-item"><i class="ph-fill ph-lock"></i> Secure checkout via Dodo</span>
+            <span class="trust-item"><i class="ph-fill ph-arrow-counter-clockwise"></i> Cancel anytime</span>
+        </div>
+
     </div>
 
     <footer class="landing-footer">
@@ -247,27 +484,64 @@
         </div>
         <div class="footer-bottom"><p>&copy; 2025 ChatLume. Your chats never leave your device.</p></div>
     </footer>
+
     <script>
-        // After auth.js resolves, update Pro CTA based on subscription status
-        window.addEventListener('DOMContentLoaded', async () => {
+        const proCta       = document.getElementById('pro-cta');
+        const ctaErrBanner = document.getElementById('cta-error');
+        const ctaErrText   = document.getElementById('cta-error-text');
+
+        function showCtaError(msg) {
+            ctaErrText.textContent = msg;
+            ctaErrBanner.classList.add('show');
+        }
+
+        async function startCheckout() {
+            ctaErrBanner.classList.remove('show');
+            proCta.disabled = true;
+            proCta.innerHTML = '<i class="ph ph-circle-notch"></i> Preparing checkout…';
+            try {
+                const res  = await fetch('/api/payments/create-checkout', { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok || !data.checkoutUrl) {
+                    showCtaError(data.error || 'Could not start checkout. Please try again.');
+                    proCta.disabled = false;
+                    proCta.innerHTML = '<i class="ph ph-lightning"></i> Upgrade to Pro — ₹149/month';
+                    return;
+                }
+                window.location.href = data.checkoutUrl;
+            } catch {
+                showCtaError('Network error. Please try again.');
+                proCta.disabled = false;
+                proCta.innerHTML = '<i class="ph ph-lightning"></i> Upgrade to Pro — ₹149/month';
+            }
+        }
+
+        async function initPricing() {
             try {
                 const res = await fetch('/api/auth/me');
-                if (!res.ok) return;
-                const user = await res.json();
-                const cta = document.getElementById('pro-cta');
-                if (!cta) return;
-                if (user?.subscription?.status === 'pro') {
-                    cta.innerHTML = '<i class="ph ph-star"></i> You\'re on Pro ✨';
-                    cta.href = '/account';
-                    cta.style.background = 'rgba(0,168,132,0.15)';
-                    cta.style.color = 'var(--primary)';
-                    cta.style.border = '1px solid rgba(0,168,132,0.3)';
-                    cta.style.boxShadow = 'none';
-                } else if (user) {
-                    cta.innerHTML = '<i class="ph ph-lightning"></i> Upgrade to Pro';
+                if (!res.ok) {
+                    // Not logged in — send to signup
+                    proCta.addEventListener('click', () => { window.location.href = '/signup'; });
+                    return;
                 }
-            } catch {}
-        });
+                const user  = await res.json();
+                const isPro = user?.subscription?.status === 'pro';
+
+                if (isPro) {
+                    proCta.innerHTML = '<i class="ph-fill ph-star"></i> You\'re on Pro ✨';
+                    proCta.classList.replace('cta-pro', 'cta-already-pro');
+                    proCta.addEventListener('click', () => { window.location.href = '/account'; });
+                } else {
+                    // Logged in, not pro — trigger checkout directly
+                    proCta.innerHTML = '<i class="ph ph-lightning"></i> Upgrade to Pro — ₹149/month';
+                    proCta.addEventListener('click', startCheckout);
+                }
+            } catch {
+                proCta.addEventListener('click', () => { window.location.href = '/signup'; });
+            }
+        }
+
+        initPricing();
     </script>
 </body>
 </html>
