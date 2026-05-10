@@ -1,0 +1,14 @@
+node_modules/
+.claude/
+.agents/
+.env
+.env.production
+cookies.txt
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

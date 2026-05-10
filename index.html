@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#00a884">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ChatLume — Free WhatsApp & Instagram Chat Viewer</title>
+    <meta name="description" content="View your WhatsApp and Instagram chat exports for free. 100% private — your chats never leave your device. Works offline. No account needed.">
+    <meta name="keywords" content="whatsapp chat viewer, instagram chat viewer, whatsapp export viewer, instagram dm viewer, view whatsapp backup, chatlume">
+    <meta name="author" content="ChatLume">
+    <meta name="application-name" content="ChatLume">
+    <meta name="robots" content="index, follow">
+    <!-- GSC verification meta tag goes here -->
+    <link rel="canonical" href="https://chatlume.parassharma.in/">
+    <meta property="og:site_name" content="ChatLume">
+    <meta property="og:title" content="ChatLume — Free WhatsApp & Instagram Chat Viewer">
+    <meta property="og:description" content="100% private WhatsApp & Instagram chat viewer. Everything stays on your device. No uploads, no servers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chatlume.parassharma.in/">
+    <meta property="og:image" content="https://chatlume.parassharma.in/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ChatLume — Free WhatsApp & Instagram Chat Viewer">
+    <meta name="twitter:description" content="100% private WhatsApp & Instagram chat viewer. Everything stays on your device.">
+    <meta name="twitter:image" content="https://chatlume.parassharma.in/og-image.png">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="./js/script.js" defer></script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ChatLume",
+        "url": "https://chatlume.parassharma.in",
+        "description": "Free WhatsApp and Instagram chat export viewer. 100% private — your chats never leave your device.",
+        "applicationCategory": "Utility",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "INR"
+        },
+        "featureList": [
+            "WhatsApp chat viewer",
+            "Instagram DM viewer",
+            "100% private - no data uploaded",
+            "Works offline",
+            "Chat analytics and stats"
+        ]
+    }
+    </script>
+    <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
+</head>
+<body class="landing-page">
+    <nav class="landing-nav">
+        <a class="logo" href="index.html" style="text-decoration:none">
+            <i class="ph-fill ph-chat-teardrop-text"></i> ChatLume
+        </a>
+        <div class="nav-links">
+            <a href="public/viewer.html">WhatsApp</a>
+            <a href="public/instagram-viewer.html">Instagram</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>View your chats privately</h1>
+        <p>Upload your WhatsApp or Instagram exports. They stay on your device. No accounts, no tracking, no server uploads.</p>
+        <div class="hero-actions">
+            <a href="public/viewer.html" class="btn-primary btn-large"><i class="ph ph-folder-open"></i> View a Chat</a>
+        </div>
+    </header>
+
+    <!-- Platform picker -->
+    <section style="max-width:680px;margin:0 auto 16px;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <a href="public/viewer.html" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--bg-sidebar);border:1px solid var(--border);border-radius:18px;padding:28px 20px;text-decoration:none;color:var(--text-primary);transition:border-color 0.2s,box-shadow 0.2s" onmouseover="this.style.borderColor='#00a884';this.style.boxShadow='0 4px 16px rgba(0,168,132,0.12)'" onmouseout="this.style.borderColor='';this.style.boxShadow=''">
+            <i class="ph-fill ph-whatsapp-logo" style="font-size:40px;color:#25D366"></i>
+            <div style="text-align:center">
+                <div style="font-weight:700;font-size:16px;margin-bottom:4px">WhatsApp Chats</div>
+                <div style="font-size:13px;color:var(--text-secondary)">Open .txt or .zip exports</div>
+            </div>
+        </a>
+        <a href="public/instagram-viewer.html" style="display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--bg-sidebar);border:1px solid var(--border);border-radius:18px;padding:28px 20px;text-decoration:none;color:var(--text-primary);transition:border-color 0.2s,box-shadow 0.2s" onmouseover="this.style.borderColor='#C13584';this.style.boxShadow='0 4px 16px rgba(193,53,132,0.12)'" onmouseout="this.style.borderColor='';this.style.boxShadow=''">
+            <i class="ph-fill ph-instagram-logo" style="font-size:40px;background:linear-gradient(135deg,#833AB4,#C13584,#E1306C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"></i>
+            <div style="text-align:center">
+                <div style="font-weight:700;font-size:16px;margin-bottom:4px">Instagram DMs</div>
+                <div style="font-size:13px;color:var(--text-secondary)">Open JSON export .zip files</div>
+            </div>
+        </a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <i class="ph-fill ph-shield-check"></i>
+            <h3>Private by default</h3>
+            <p>Everything runs in your browser. No server, no accounts, no data collection. Your chats never leave your device.</p>
+        </div>
+        <div class="feature-card">
+            <i class="ph-fill ph-lightning"></i>
+            <h3>Works offline</h3>
+            <p>After the page loads, you don't need internet. Parse and view massive exports instantly, no waiting.</p>
+        </div>
+        <div class="feature-card">
+            <i class="ph-fill ph-chart-pie-slice"></i>
+            <h3>See your stats</h3>
+            <p>Who messages most. Your favorite emojis. Message frequency by hour. Simple analytics, nothing fancy.</p>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div>
+                <h4>Use ChatLume</h4>
+                <a href="public/viewer.html">WhatsApp Viewer</a>
+                <a href="public/instagram-viewer.html">Instagram Viewer</a>
+            </div>
+            <div>
+                <h4>Learn</h4>
+                <a href="public/how-to-export.html">How to Export</a>
+                <a href="public/how-to-use.html">How to Use</a>
+                <a href="privacy.html">Privacy</a>
+            </div>
+            <div>
+                <h4>Support</h4>
+                <a href="donate.html">Donate</a>
+                <a href="https://github.com/parassharma2306/ChatLume" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span class="footer-year">2025</span> Paras Sharma &middot; <a href="https://github.com/parassharma2306/ChatLume" target="_blank" rel="noopener noreferrer">GitHub</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="donate.html">Donate</a></p>
+            <script>document.querySelectorAll('.footer-year').forEach(el => el.textContent = new Date().getFullYear());</script>
+        </div>
+    </footer>
+</body>
+</html>

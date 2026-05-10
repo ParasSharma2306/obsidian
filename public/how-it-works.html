@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00a884">
+    <title>How It Works | ChatLume</title>
+    <meta name="description" content="Learn how ChatLume parses your WhatsApp exports locally.">
+    <meta name="author" content="Paras Sharma">
+    <meta name="application-name" content="ChatLume">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://chatlume.parassharma.in/how-it-works">
+    <meta property="og:site_name" content="ChatLume">
+    <meta property="og:title" content="How ChatLume Works">
+    <meta property="og:description" content="Learn how ChatLume parses WhatsApp exports locally with no backend or upload.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chatlume.parassharma.in/how-it-works">
+    <meta property="og:image" content="https://chatlume.parassharma.in/assets/icon-512.png">
+    <meta property="og:image:alt" content="ChatLume app icon">
+    <meta name="twitter:card" content="summary">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../assets/icon-192.png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script defer src="https://umami-production-6ac3.up.railway.app/script.js" data-website-id="1d5bfab3-abe3-4c0b-a912-9f2c50d022ad"></script>
+</head>
+<body class="page-layout">
+    <nav class="landing-nav">
+        <a class="logo" href="../index.html" style="text-decoration:none"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</a>
+        <div class="nav-links"><a href="viewer.html">WhatsApp</a><a href="instagram-viewer.html">Instagram</a></div>
+    </nav>
+    <main class="content-container article-layout">
+        <h1>How ChatLume Works</h1>
+        <p>ChatLume parses your chat exports locally in your browser. Nothing is uploaded to a server.</p>
+        
+        <h2>Local File Parsing</h2>
+        <p>When you drag and drop a `.txt` or `.zip` file into ChatLume, the file is read using the HTML5 File API. The contents are parsed locally by JavaScript running directly in your browser. At no point is a server or external API involved.</p>
+
+        <h2>Privacy Model</h2>
+        <p>Because everything happens locally, your data is fundamentally secure. You could even disconnect your internet after loading the page, and the tool would still parse and display your entire chat perfectly.</p>
+    </main>
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div><h4>Use ChatLume</h4><a href="viewer.html">WhatsApp Viewer</a><a href="instagram-viewer.html">Instagram Viewer</a></div>
+            <div><h4>Learn</h4><a href="how-to-export.html">How to Export</a><a href="how-to-use.html">How to Use</a><a href="../privacy.html">Privacy</a></div>
+            <div><h4>Support</h4><a href="../donate.html">Donate</a><a href="https://github.com/parassharma2306/ChatLume" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; <span class="footer-year">2025</span> Paras Sharma</p>
+        <script>document.querySelectorAll('.footer-year').forEach(el => el.textContent = new Date().getFullYear());</script>
+        </div>
+    </footer>
+</body>
+</html>
