@@ -538,7 +538,19 @@ async function initViewer() {
 }
 
 async function loadChatExport(file) {
-    if (!file.name.toLowerCase().endsWith(".zip")) {
+    const MAX_TXT_BYTES = 500 * 1024 * 1024;   // 500 MB
+    const MAX_ZIP_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
+
+    const isZip = file.name.toLowerCase().endsWith(".zip");
+    const limit = isZip ? MAX_ZIP_BYTES : MAX_TXT_BYTES;
+
+    if (file.size > limit) {
+        const sizeMB = Math.round(file.size / 1024 / 1024).toLocaleString();
+        const limitLabel = isZip ? "2 GB" : "500 MB";
+        throw new Error(`File is too large (${sizeMB} MB). ChatLume processes files entirely in-browser and cannot load ${isZip ? "ZIP exports" : "text files"} larger than ${limitLabel}. Try exporting without media, or split the export into smaller date ranges.`);
+    }
+
+    if (!isZip) {
         return {
             rawText: await readFileAsText(file),
             attachments: []
@@ -576,7 +588,7 @@ function readFileAsText(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => resolve(String(event.target?.result || ""));
-        reader.onerror = () => reject(new Error("Unable to read file"));
+        reader.onerror = () => reject(reader.error || new Error("Unable to read file"));
         reader.readAsText(file, "utf-8");
     });
 }
@@ -1343,6 +1355,14 @@ function syncFocusedSearchResult() {
     current?.querySelector(".hl")?.classList.add("focus");
 }
 
+function highlightOutsideTags(html, query) {
+    const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
+    return html.replace(/(<[^>]+>)|([^<]+)/g, (_, tag, text) => {
+        if (tag) return tag;
+        return text.replace(regex, '<span class="hl">$1</span>');
+    });
+}
+
 function renderMessageText(text) {
     if (state.settings.richText) {
         return linkifyAndHighlight(text);
@@ -1351,8 +1371,7 @@ function renderMessageText(text) {
     const query = $("live-search")?.value.trim();
     let escaped = escapeHtml(text || "");
     if (query) {
-        const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
-        escaped = escaped.replace(regex, '<span class="hl">$1</span>');
+        escaped = highlightOutsideTags(escaped, query);
     }
     return escaped;
 }
@@ -1370,8 +1389,7 @@ function linkifyAndHighlight(text) {
     escaped = escaped.replace(/~([^~\n]+)~/g, "<s>$1</s>");
 
     if (query) {
-        const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
-        escaped = escaped.replace(regex, '<span class="hl">$1</span>');
+        escaped = highlightOutsideTags(escaped, query);
     }
 
     return escaped;
@@ -1384,9 +1402,9 @@ function formatMessageTime(rawTime) {
         return applyBrackets(original, state.settings.timeBrackets);
     }
     if (state.settings.timeFormat === "auto") {
-        const autoTime = state.settings.showSeconds
-            ? original
-            : original.replace(/:(\d{2})(\s?[APap][Mm])?$/, "$2");
+        const autoTime = (parsed.second !== "" && !state.settings.showSeconds)
+            ? original.replace(/:(\d{2})(\s?[APap][Mm])?$/, "$2")
+            : original;
         return applyBrackets(autoTime.trim(), state.settings.timeBrackets);
     }
 
@@ -1862,6 +1880,7 @@ function updateUIState(filename) {
     if ($("sidebar-sub")) $("sidebar-sub").innerText = state.mediaMissingCount
         ? `${state.mediaMissingCount} missing attachment${state.mediaMissingCount === 1 ? "" : "s"}`
         : "Loaded successfully";
+    if ($("profile-display-name")) $("profile-display-name").innerText = state.myName || "You";
 }
 
 function getSearchableText(entry) {
