@@ -1,3 +1,12 @@
+import { configure, BlobReader, ZipReader, BlobWriter, TextWriter } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
+configure({ useDecompressionStream: typeof DecompressionStream !== 'undefined' });
+
+const IG_SUPPORTS_STREAMING =
+    typeof DecompressionStream !== 'undefined' &&
+    typeof WritableStream !== 'undefined' &&
+    typeof TextDecoderStream !== 'undefined';
+const IG_COMPAT_FILE_SIZE_LIMIT = 1 * 1024 * 1024 * 1024; // 1 GB cap for browsers without streaming APIs
+
 // Instagram DM Viewer — all processing is client-side, nothing is uploaded.
 
 const IG_BATCH_SIZE = 60;
@@ -5,7 +14,7 @@ const IG_MAX_RENDERED = 180;
 const IG_COLORS = ["#e542a3","#1f7aec","#d44638","#2ecc71","#f39c12","#9b59b6","#3498db","#1abc9c"];
 
 const igState = {
-  zip: null,
+  zipEntries: [],
   threads: [],
   messages: [],
   filteredMessages: [],
@@ -29,7 +38,9 @@ const igState = {
   activeTheme: "dark",
   searchResults: [],
   searchPointer: -1,
-  searchTimer: null
+  searchTimer: null,
+  zipReader: null,
+  loadGeneration: 0
 };
 
 const $ig = (id) => document.getElementById(id);
@@ -55,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyIgTheme();
   bindIgUI();
   runIgLoader();
+  checkIgBrowserCompatibility();
   if (window.innerWidth <= 800) setIgSidebarState(true);
 });
 
@@ -64,6 +76,7 @@ window.addEventListener("resize", () => {
 
 window.addEventListener("beforeunload", () => {
   igState.mediaUrls.forEach(url => URL.revokeObjectURL(url));
+  igState.zipReader?.close().catch(() => {});
 });
 
 window.addEventListener("popstate", () => closeIgMediaModal());
@@ -93,6 +106,21 @@ function runIgLoader() {
   }
 }
 
+function checkIgBrowserCompatibility() {
+  if (IG_SUPPORTS_STREAMING) return;
+  const nav = document.querySelector("nav.app-nav");
+  const banner = document.createElement("div");
+  banner.id = "compat-banner";
+  banner.setAttribute("role", "alert");
+  banner.style.cssText = "background:#7c5c00;color:#fef3c7;padding:8px 16px;font-size:13px;text-align:center;position:sticky;top:0;z-index:999;line-height:1.5";
+  banner.textContent = "⚠️ Your browser has limited support. Files over 1 GB may not load. Please use Chrome 80+, Firefox 79+, or Safari 16.4+.";
+  if (nav?.parentNode) {
+    nav.parentNode.insertBefore(banner, nav.nextSibling);
+  } else {
+    document.body.prepend(banner);
+  }
+}
+
 // ── UI Bindings ───────────────────────────────────────────────────────────────
 function bindIgUI() {
   $ig("ig-theme-toggle")?.addEventListener("click", () => {
@@ -114,7 +142,14 @@ function bindIgUI() {
   });
   fileInput?.addEventListener("change", e => {
     const f = e.target.files?.[0];
-    if (f) { igState.selectedFile = f; reflectIgFile(f); }
+    if (!f) return;
+    if (!IG_SUPPORTS_STREAMING && f.size > IG_COMPAT_FILE_SIZE_LIMIT) {
+      showIgToast("File exceeds the 1 GB limit for your browser. Use Chrome 80+, Firefox 79+, or Safari 16.4+ for larger files.");
+      e.target.value = "";
+      return;
+    }
+    igState.selectedFile = f;
+    reflectIgFile(f);
   });
 
   const dt = $ig("ig-drop-target");
@@ -124,8 +159,13 @@ function bindIgUI() {
     dt.addEventListener("drop", e => {
       const files = e.dataTransfer?.files;
       if (!files?.length) return;
-      igState.selectedFile = files[0];
-      reflectIgFile(files[0]);
+      const f = files[0];
+      if (!IG_SUPPORTS_STREAMING && f.size > IG_COMPAT_FILE_SIZE_LIMIT) {
+        showIgToast("File exceeds the 1 GB limit for your browser. Use Chrome 80+, Firefox 79+, or Safari 16.4+ for larger files.");
+        return;
+      }
+      igState.selectedFile = f;
+      reflectIgFile(f);
     });
   }
 
@@ -203,18 +243,26 @@ async function initIgViewer() {
   if (!file) { showIgToast("Please select an Instagram export ZIP"); return; }
   if (!file.name.toLowerCase().endsWith(".zip")) { showIgToast("Please select a .zip file"); return; }
 
+  if (!IG_SUPPORTS_STREAMING && file.size > IG_COMPAT_FILE_SIZE_LIMIT) {
+    showIgToast(`File is too large for your browser (${(file.size / 1073741824).toFixed(1)} GB). Use Chrome 80+, Firefox 79+, or Safari 16.4+ for files over 1 GB.`);
+    return;
+  }
+
+  const igGen = ++igState.loadGeneration;
+
   setIgLoading(true, "Opening ZIP", "Reading your Instagram export...");
   await yieldIg();
 
   try {
-    if (typeof JSZip === "undefined") throw new Error("JSZip not available — please refresh.");
-    const zip = await new JSZip().loadAsync(file);
-    igState.zip = zip;
+    const reader = new ZipReader(new BlobReader(file));
+    const entries = await reader.getEntries();
+    igState.zipEntries = entries;
+    igState.zipReader = reader;
 
     setIgLoading(true, "Scanning threads", "Finding message folders...");
     await yieldIg();
 
-    const threads = findIgThreads(zip);
+    const threads = findIgThreads(entries);
     if (!threads.length) throw new Error("No Instagram message folders found. Make sure you selected JSON format when requesting the export.");
 
     igState.threads = threads;
@@ -245,11 +293,11 @@ async function initIgViewer() {
 }
 
 // ── Thread discovery ──────────────────────────────────────────────────────────
-function findIgThreads(zip) {
+function findIgThreads(entries) {
   const map = new Map();
-  Object.values(zip.files).forEach(entry => {
-    if (entry.dir) return;
-    const m = entry.name.match(/messages\/inbox\/([^/]+)\/(message_\d+\.json)$/i);
+  entries.forEach(entry => {
+    if (entry.directory) return;
+    const m = entry.filename.match(/messages\/inbox\/([^/]+)\/(message_\d+\.json)$/i);
     if (!m) return;
     const folder = m[1];
     if (!map.has(folder)) map.set(folder, { folder, files: [] });
@@ -314,8 +362,8 @@ async function loadIgThread(thread) {
 
   try {
     const sortedFiles = [...thread.files].sort((a, b) => {
-      const na = parseInt(a.name.match(/message_(\d+)\.json$/i)?.[1] || "0", 10);
-      const nb = parseInt(b.name.match(/message_(\d+)\.json$/i)?.[1] || "0", 10);
+      const na = parseInt(a.filename.match(/message_(\d+)\.json$/i)?.[1] || "0", 10);
+      const nb = parseInt(b.filename.match(/message_(\d+)\.json$/i)?.[1] || "0", 10);
       return na - nb;
     });
 
@@ -326,7 +374,7 @@ async function loadIgThread(thread) {
     for (let i = 0; i < sortedFiles.length; i++) {
       setIgLoading(true, "Loading thread", `Parsing file ${i + 1} of ${sortedFiles.length}...`);
       await yieldIg();
-      const text = await sortedFiles[i].async("string");
+      const text = await sortedFiles[i].getData(new TextWriter("utf-8"));
       let data;
       try { data = JSON.parse(text); } catch { continue; }
       if (data.title) threadTitle = fixMojibake(data.title);
@@ -344,9 +392,10 @@ async function loadIgThread(thread) {
     igState.chatTitle = threadTitle;
 
     // Build media store from all non-JSON files in this thread's folder
-    buildIgMediaStore(igState.zip, thread.folder);
+    buildIgMediaStore(igState.zipEntries, thread.folder);
 
     const validRaw = allRaw.filter(m => !m.is_unsent);
+    allRaw = null; // release raw message array memory before parsing
     parseIgMessages(validRaw);
 
     if (igState.messageOnlyCount === 0) {
@@ -383,17 +432,17 @@ async function loadIgThread(thread) {
 }
 
 // ── Media store ───────────────────────────────────────────────────────────────
-function buildIgMediaStore(zip, threadFolder) {
+function buildIgMediaStore(entries, threadFolder) {
   let idx = 0;
-  Object.values(zip.files).forEach(entry => {
-    if (entry.dir || entry.name.toLowerCase().endsWith(".json")) return;
+  entries.forEach(entry => {
+    if (entry.directory || entry.filename.toLowerCase().endsWith(".json")) return;
 
-    const mt = detectIgMediaType(igBaseName(entry.name));
-    const id = `igm-${idx++}-${igNormKey(entry.name).slice(-20)}`;
+    const mt = detectIgMediaType(igBaseName(entry.filename));
+    const id = `igm-${idx++}-${igNormKey(entry.filename).slice(-20)}`;
     const media = {
       id,
-      name: igBaseName(entry.name),
-      path: entry.name,
+      name: igBaseName(entry.filename),
+      path: entry.filename,
       kind: mt.kind,
       mime: mt.mime,
       entry,
@@ -403,8 +452,7 @@ function buildIgMediaStore(zip, threadFolder) {
     };
 
     igState.mediaStore.set(id, media);
-    // Index by full normalized path and by filename alone
-    [igNormKey(entry.name), igNormKey(igBaseName(entry.name))].forEach(k => {
+    [igNormKey(entry.filename), igNormKey(igBaseName(entry.filename))].forEach(k => {
       if (k && !igState.mediaLookup.has(k)) igState.mediaLookup.set(k, media);
     });
   });
@@ -628,12 +676,15 @@ async function ensureIgMediaUrl(media) {
   if (media.url) return media.url;
   if (media.loadingPromise) return media.loadingPromise;
   if (!media.entry) throw new Error("No entry for media");
-  media.loadingPromise = media.entry.async("blob").then(blob => {
-    const url = URL.createObjectURL(blob);
-    media.url = url;
-    igState.mediaUrls.add(url);
-    return url;
-  }).finally(() => { media.loadingPromise = null; });
+  media.loadingPromise = media.entry
+    .getData(new BlobWriter(media.mime || "application/octet-stream"))
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      media.url = url;
+      igState.mediaUrls.add(url);
+      return url;
+    })
+    .finally(() => { media.loadingPromise = null; });
   return media.loadingPromise;
 }
 

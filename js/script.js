@@ -1,3 +1,12 @@
+import { configure, BlobReader, ZipReader, BlobWriter } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
+configure({ useDecompressionStream: typeof DecompressionStream !== 'undefined' });
+
+const SUPPORTS_STREAMING =
+    typeof DecompressionStream !== 'undefined' &&
+    typeof WritableStream !== 'undefined' &&
+    typeof TextDecoderStream !== 'undefined';
+const COMPAT_FILE_SIZE_LIMIT = 1 * 1024 * 1024 * 1024; // 1 GB cap for browsers without streaming APIs
+
 const BATCH_SIZE = 60;
 const MAX_RENDERED_ITEMS = 180;
 const COLORS = ["#e542a3", "#1f7aec", "#d44638", "#2ecc71", "#f39c12", "#9b59b6", "#3498db", "#1abc9c"];
@@ -47,6 +56,8 @@ const state = {
     toastTimer: null,
     isSearchOpen: false,
     isLoading: false,
+    loadGeneration: 0,
+    zipReader: null,
     mediaObserver: null
 };
 
@@ -61,6 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     applySavedTheme();
     syncSettingsControls();
     runLoader();
+    checkBrowserCompatibility();
     if (window.innerWidth <= 800) {
         setSidebarState(true);
     }
@@ -404,25 +416,47 @@ function setupDropTarget() {
     dropTarget.addEventListener("drop", (event) => {
         const files = event.dataTransfer?.files;
         if (!files || files.length === 0) return;
+        const file = files[0];
+        if (!SUPPORTS_STREAMING && file.size > COMPAT_FILE_SIZE_LIMIT) {
+            showToast("File exceeds the 1 GB limit for your browser. Use Chrome 80+, Firefox 79+, or Safari 16.4+ for larger files.");
+            return;
+        }
         const fileInput = $("file-input");
-        state.selectedFile = files[0];
+        state.selectedFile = file;
         try {
-            if (fileInput) {
-                fileInput.files = files;
-            }
+            if (fileInput) fileInput.files = files;
         } catch (error) {
             console.warn("Unable to assign dropped files to input:", error);
         }
-        reflectSelectedFile(files[0]);
+        reflectSelectedFile(file);
     });
+}
+
+function checkBrowserCompatibility() {
+    if (SUPPORTS_STREAMING) return;
+    const nav = document.querySelector("nav.app-nav");
+    const banner = document.createElement("div");
+    banner.id = "compat-banner";
+    banner.setAttribute("role", "alert");
+    banner.style.cssText = "background:#7c5c00;color:#fef3c7;padding:8px 16px;font-size:13px;text-align:center;position:sticky;top:0;z-index:999;line-height:1.5";
+    banner.textContent = "⚠️ Your browser has limited support. Files over 1 GB may not load. Please use Chrome 80+, Firefox 79+, or Safari 16.4+.";
+    if (nav?.parentNode) {
+        nav.parentNode.insertBefore(banner, nav.nextSibling);
+    } else {
+        document.body.prepend(banner);
+    }
 }
 
 function handleFileInputChange(event) {
     const file = event.target.files?.[0];
-    if (file) {
-        state.selectedFile = file;
-        reflectSelectedFile(file);
+    if (!file) return;
+    if (!SUPPORTS_STREAMING && file.size > COMPAT_FILE_SIZE_LIMIT) {
+        showToast("File exceeds the 1 GB limit for your browser. Use Chrome 80+, Firefox 79+, or Safari 16.4+ for larger files.");
+        event.target.value = "";
+        return;
     }
+    state.selectedFile = file;
+    reflectSelectedFile(file);
 }
 
 function reflectSelectedFile(file) {
@@ -477,9 +511,9 @@ async function initViewer() {
     }
 
     state.myName = displayName;
-    
+
     const isZip = file.name.toLowerCase().endsWith(".zip");
-    const initText = isZip ? "Unzipping and extracting media into memory... This might take a minute for large files." : "Reading text file...";
+    const initText = isZip ? "Opening ZIP and scanning entries..." : "Reading text file...";
     
     setLoadingState(true, `Loading ${file.name}`, initText);
     
@@ -493,19 +527,32 @@ async function initViewer() {
         setSidebarState(false);
     }
 
+    const gen = ++state.loadGeneration;
+
+    if (!SUPPORTS_STREAMING && file.size > COMPAT_FILE_SIZE_LIMIT) {
+        setLoadingState(false);
+        showToast(`File is too large for your browser (${(file.size / 1073741824).toFixed(1)} GB). Use Chrome 80+, Firefox 79+, or Safari 16.4+ for files over 1 GB.`);
+        return;
+    }
+
     try {
-        const { rawText, attachments } = await loadChatExport(file);
-        
+        let { rawText, chatEntry, attachments } = await loadChatExport(file);
+
         updateLoadingCopy(
             attachments.length
-                ? `Matched ${attachments.length.toLocaleString()} attachments. Parsing messages...`
-                : "Parsing messages..."
+                ? `Matched ${attachments.length.toLocaleString()} attachments. Extracting chat...`
+                : "Extracting chat..."
         );
-        
+
         await new Promise(resolve => setTimeout(resolve, 30));
-        
+
         buildMediaStore(attachments);
-        await parseChatData(rawText);
+        if (chatEntry) {
+            await parseChatDataFromEntry(chatEntry, gen);
+        } else {
+            await parseChatData(rawText);
+            rawText = null; // release large string after parsing
+        }
 
         if (state.messageOnlyCount === 0) {
             showToast("No messages could be parsed. Check export format and display name.");
@@ -538,50 +585,33 @@ async function initViewer() {
 }
 
 async function loadChatExport(file) {
-    const MAX_TXT_BYTES = 500 * 1024 * 1024;   // 500 MB
-    const MAX_ZIP_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
-
-    const isZip = file.name.toLowerCase().endsWith(".zip");
-    const limit = isZip ? MAX_ZIP_BYTES : MAX_TXT_BYTES;
-
-    if (file.size > limit) {
-        const sizeMB = Math.round(file.size / 1024 / 1024).toLocaleString();
-        const limitLabel = isZip ? "2 GB" : "500 MB";
-        throw new Error(`File is too large (${sizeMB} MB). ChatLume processes files entirely in-browser and cannot load ${isZip ? "ZIP exports" : "text files"} larger than ${limitLabel}. Try exporting without media, or split the export into smaller date ranges.`);
+    if (!file.name.toLowerCase().endsWith(".zip")) {
+        return { rawText: await readFileAsText(file), chatEntry: null, attachments: [] };
     }
 
-    if (!isZip) {
-        return {
-            rawText: await readFileAsText(file),
-            attachments: []
-        };
-    }
+    const reader = new ZipReader(new BlobReader(file));
+    state.zipReader = reader;
+    const allEntries = await reader.getEntries();
 
-    if (typeof JSZip === "undefined") {
-        throw new Error("Zip support is not available right now. Please refresh and try again.");
-    }
-
-    const zip = await new JSZip().loadAsync(file);
-    const entries = Object.values(zip.files).filter((entry) => !entry.dir && !entry.name.startsWith("__MACOSX"));
-    const chatEntry = entries.find((entry) => entry.name.toLowerCase().endsWith(".txt"));
+    const entries = allEntries.filter(e => !e.directory && !e.filename.startsWith("__MACOSX/"));
+    const chatEntry = entries
+        .filter(e => e.filename.toLowerCase().endsWith(".txt"))
+        .sort((a, b) => b.uncompressedSize - a.uncompressedSize)[0];
 
     if (!chatEntry) {
         throw new Error("No .txt file found in ZIP");
     }
 
     const attachments = entries
-        .filter((entry) => entry.name !== chatEntry.name)
-        .map((entry) => ({
-            name: baseName(entry.name),
-            path: entry.name,
-            entry,
-            size: getZipEntrySize(entry)
+        .filter(e => e !== chatEntry)
+        .map(e => ({
+            name: baseName(e.filename),
+            path: e.filename,
+            entry: e,
+            size: e.uncompressedSize || 0
         }));
 
-    return {
-        rawText: await chatEntry.async("string"),
-        attachments
-    };
+    return { rawText: null, chatEntry, attachments };
 }
 
 function readFileAsText(file) {
@@ -593,9 +623,6 @@ function readFileAsText(file) {
     });
 }
 
-function getZipEntrySize(entry) {
-    return entry?._data?.uncompressedSize || entry?._data?.compressedSize || 0;
-}
 
 function resetChatState() {
     state.messages = [];
@@ -624,6 +651,10 @@ function cleanupMediaStore() {
     state.mediaUrls.clear();
     state.mediaStore.clear();
     state.mediaLookup.clear();
+    if (state.zipReader) {
+        state.zipReader.close().catch(() => {});
+        state.zipReader = null;
+    }
     disconnectMediaObserver();
     closeMediaModal();
 }
@@ -642,15 +673,18 @@ async function ensureMediaUrl(media) {
         throw new Error("Media source is unavailable");
     }
 
-    media.loadingPromise = media.entry.async("blob").then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        media.url = objectUrl;
-        media.size = media.size || blob.size;
-        state.mediaUrls.add(objectUrl);
-        return objectUrl;
-    }).finally(() => {
-        media.loadingPromise = null;
-    });
+    media.loadingPromise = media.entry
+        .getData(new BlobWriter(media.mime || "application/octet-stream"))
+        .then((blob) => {
+            media.size = media.size || blob.size;
+            const objectUrl = URL.createObjectURL(blob);
+            media.url = objectUrl;
+            state.mediaUrls.add(objectUrl);
+            return objectUrl;
+        })
+        .finally(() => {
+            media.loadingPromise = null;
+        });
 
     return media.loadingPromise;
 }
@@ -2006,19 +2040,15 @@ function labelForMediaKind(kind) {
     return labels[kind] || "File";
 }
 
-async function parseChatData(text) {
+function createWAChatLineProcessor() {
     const messageRegex = /^\[?(\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}[,.]?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s?[APap][Mm])?)\]?\s*(?:-\s*)?(.*?):\s*(.*)$/;
     const systemRegex = /^\[?(\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}[,.]?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s?[APap][Mm])?)\]?\s*(?:-\s*)?(.*)$/;
-
     let lastDate = "";
     let lastMessage = null;
     let lineIndex = 0;
-    let start = 0;
-    let nextYieldAt = 2000;
-    const newlineRegex = /\r?\n/g;
 
-    const processLine = (originalLine) => {
-        const line = originalLine.replace(/[\u200E\u200F\u202A-\u202E\u200B]/g, "");
+    function processLine(originalLine) {
+        const line = originalLine.replace(/[\u200E\u200F\u202A-\u202E\u200B\r]/g, "");
 
         const messageMatch = line.match(messageRegex);
         if (messageMatch) {
@@ -2026,15 +2056,14 @@ async function parseChatData(text) {
             const sender = messageMatch[2].trim();
             const rawContent = messageMatch[3] || "";
             const dateStr = extractDatePart(rawTime);
-
             if (dateStr && dateStr !== lastDate) {
                 state.messages.push({ type: "date", content: dateStr, rawDate: dateStr, id: `date-${lineIndex}` });
                 lastDate = dateStr;
             }
-
             const message = createMessageEntry(lineIndex, rawTime, sender, rawContent);
             state.messages.push(message);
             lastMessage = message;
+            lineIndex++;
             return;
         }
 
@@ -2043,34 +2072,50 @@ async function parseChatData(text) {
             const rawTime = systemMatch[1].trim();
             const content = (systemMatch[2] || "").trim();
             const dateStr = extractDatePart(rawTime);
-
             if (dateStr && dateStr !== lastDate) {
                 state.messages.push({ type: "date", content: dateStr, rawDate: dateStr, id: `date-${lineIndex}` });
                 lastDate = dateStr;
             }
-
             if (content) {
                 state.messages.push({ type: "system", id: `sys-${lineIndex}`, rawTime, time: extractTimePart(rawTime), content });
                 lastMessage = null;
             }
+            lineIndex++;
             return;
         }
 
         if (lastMessage && lastMessage.type === "msg") {
             appendContinuation(lastMessage, line);
         }
-    };
+        lineIndex++;
+    }
+
+    function finalize() {
+        state.filteredMessages = state.messages;
+        state.inferredDateOrder = inferDateOrder(state.messages.filter(e => e.type === "date").map(e => e.content));
+        state.renderRange = { start: Math.max(0, state.filteredMessages.length - MAX_RENDERED_ITEMS), end: state.filteredMessages.length };
+        generateStats();
+    }
+
+    return { processLine, finalize, getLineIndex: () => lineIndex };
+}
+
+async function parseChatData(text) {
+    const { processLine, finalize, getLineIndex } = createWAChatLineProcessor();
+    let start = 0;
+    let nextYieldAt = 2000;
+    const newlineRegex = /\r?\n/g;
 
     while (true) {
         const match = newlineRegex.exec(text);
         const end = match ? match.index : text.length;
         processLine(text.slice(start, end));
-        lineIndex += 1;
+        const lineIndex = getLineIndex();
 
         if (lineIndex >= nextYieldAt) {
             const pct = Math.round((end / text.length) * 100);
             updateLoadingCopy(`Parsing messages... ${pct}% (${lineIndex.toLocaleString()} lines)`);
-            nextYieldAt += 2000;
+            nextYieldAt = lineIndex + 2000;
             await new Promise(resolve => setTimeout(resolve, 5));
         }
 
@@ -2078,11 +2123,60 @@ async function parseChatData(text) {
         start = newlineRegex.lastIndex;
     }
 
-    state.filteredMessages = state.messages;
-    state.inferredDateOrder = inferDateOrder(state.messages.filter(e => e.type === "date").map(e => e.content));
+    finalize();
+}
 
-    state.renderRange = { start: Math.max(0, state.filteredMessages.length - MAX_RENDERED_ITEMS), end: state.filteredMessages.length };
-    generateStats();
+// MEMORY NOTE: With BlobReader + streaming WritableStream, peak RAM usage for a 5GB ZIP
+// is approximately equal to: decompression buffer (~a few MB) + current chunk in JS (~few KB)
+// + accumulated message objects (varies by chat size). The ZIP itself is never buffered.
+// Practical limit is RAM available for message objects, not file size.
+async function parseChatDataFromEntry(entry, gen) {
+    const { processLine, finalize, getLineIndex } = createWAChatLineProcessor();
+    const decoder = new TextDecoder("utf-8");
+    let lineBuffer = "";
+    let bytesLoaded = 0;
+    const totalBytes = entry.uncompressedSize || 1;
+    let nextYieldAt = 2000;
+    let parseSucceeded = false;
+
+    try {
+        await entry.getData(new WritableStream({
+            write(chunk) {
+                if (state.loadGeneration !== gen) {
+                    throw new DOMException("Load superseded by a newer file selection", "AbortError");
+                }
+                bytesLoaded += chunk.length;
+                lineBuffer += decoder.decode(chunk, { stream: true });
+                const parts = lineBuffer.split("\n");
+                lineBuffer = parts.pop();
+                for (const rawLine of parts) {
+                    processLine(rawLine);
+                }
+                const lineIndex = getLineIndex();
+                if (lineIndex >= nextYieldAt) {
+                    const pct = Math.round((bytesLoaded / totalBytes) * 100);
+                    updateLoadingCopy(`Parsing messages... ${pct}% (${lineIndex.toLocaleString()} lines)`);
+                    nextYieldAt = lineIndex + 2000;
+                    return new Promise(resolve => setTimeout(resolve, 0));
+                }
+            },
+            close() {
+                const tail = lineBuffer + decoder.decode();
+                if (tail) processLine(tail);
+            }
+        }));
+
+        finalize();
+        parseSucceeded = true;
+    } catch (err) {
+        console.error('[CL] parseChatDataFromEntry error:', err.name, err.message, err.stack);
+        throw err;
+    } finally {
+        if (!parseSucceeded && state.zipReader) {
+            state.zipReader.close().catch(() => {});
+            state.zipReader = null;
+        }
+    }
 }
 
 function appendContinuation(message, line) {
