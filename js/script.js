@@ -246,8 +246,8 @@ async function downloadWrappedGraphic() {
         }
 
         const canvas = await html2canvas(element, {
-            backgroundColor: document.body.classList.contains("light-theme") ? "#f0f2f5" : "#0b141a",
-            scale: window.devicePixelRatio > 1 ? 2 : 3,
+            backgroundColor: "#000",
+            scale: 2,
             useCORS: true,
             logging: false
         });
@@ -988,11 +988,11 @@ function populateWrappedGraphic() {
     const lastDate = dates.length > 0 ? formatDateLabel(dates[dates.length - 1].rawDate || dates[dates.length - 1].content) : "Unknown Date";
     const dateRange = firstDate !== "Unknown Date" && firstDate !== lastDate ? `${firstDate} - ${lastDate}` : firstDate;
 
-    // Emojis
-    const sortedEmojis = Object.entries(state.emojiStats).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    // Emojis — top 6 in a 3-column grid
+    const sortedEmojis = Object.entries(state.emojiStats).sort((a, b) => b[1] - a[1]).slice(0, 6);
     let emojisHtml = sortedEmojis.length === 0
-        ? "<span style='color: rgba(255,255,255,0.4); font-size: 13px;'>No emojis found</span>"
-        : sortedEmojis.map(e => `<div class="wg-emoji-badge">${e[0]}<div class="wg-emoji-count">${e[1].toLocaleString()}</div></div>`).join("");
+        ? "<span style='color:#555; font-size:13px;'>No emojis found</span>"
+        : sortedEmojis.map(e => `<div class="wg-emoji-cell"><span class="wg-emoji-char">${e[0]}</span><span class="wg-emoji-count">${e[1].toLocaleString()}</span></div>`).join("");
 
     // Top Senders Split
     const sortedSenders = Object.entries(state.senderStats).sort((a, b) => b[1] - a[1]).slice(0, 4);
@@ -1008,38 +1008,39 @@ function populateWrappedGraphic() {
     
     graphic.innerHTML = `
         <div class="wg-header">
+            <div class="wg-brand-tag">ChatLume Wrapped</div>
             <h2>${escapeHtml(chatTitle)}</h2>
             <p>${escapeHtml(dateRange)}</p>
         </div>
 
+        <div class="wg-divider"></div>
+
         <div class="wg-stats-grid">
             <div class="wg-stat-card">
-                <span>Total Messages</span>
+                <span>Messages</span>
                 <h3>${total.toLocaleString()}</h3>
             </div>
             <div class="wg-stat-card">
-                <span>Total Words</span>
+                <span>Words</span>
                 <h3>${totalWords.toLocaleString()}</h3>
             </div>
             <div class="wg-stat-card">
-                <span>Shared Media</span>
+                <span>Media</span>
                 <h3>${totalMedia.toLocaleString()}</h3>
             </div>
             <div class="wg-stat-card">
-                <span>Peak Activity</span>
+                <span>Peak Hour</span>
                 <h3>${peakHour12}</h3>
             </div>
         </div>
 
         <div class="wg-section">
-            <span>Most Used Emojis</span>
-            <div class="wg-emoji-list">
-                ${emojisHtml}
-            </div>
+            <div class="wg-label">Most Used</div>
+            <div class="wg-emoji-grid">${emojisHtml}</div>
         </div>
 
         <div class="wg-section">
-            <span>Top Contributors</span>
+            <div class="wg-label">Top Contributors</div>
             <div class="wg-split">
                 <div class="wg-split-bar">${barHtml}</div>
                 <div class="wg-split-labels">${labelsHtml}</div>
@@ -1047,7 +1048,7 @@ function populateWrappedGraphic() {
         </div>
 
         <div class="wg-brand-footer">
-            <div class="wg-logo"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume Wrapped</div>
+            <div class="wg-logo"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</div>
             <div class="wg-url">${SITE_URL.replace(/^https?:\/\//, "")}</div>
         </div>
     `;

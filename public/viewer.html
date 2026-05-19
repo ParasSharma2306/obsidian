@@ -254,7 +254,7 @@
                     <div class="info-block">
                         <h3>About ChatLume</h3>
                         <p>ChatLume is a privacy-first WhatsApp chat viewer and analytics tool. It turns exported chats into a familiar interface with deep analytics while keeping processing fully inside your browser.</p>
-                        <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)">Version 1.1.0 &nbsp;&middot;&nbsp; by <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Paras Sharma</a></p>
+                        <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)">Version 1.1.1 &nbsp;&middot;&nbsp; by <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Paras Sharma</a></p>
                         <p style="font-size:13px;color:var(--text-secondary);margin-top:4px"><a href="mailto:hello@parassharma.com" style="color:var(--primary)">hello@parassharma.com</a></p>
                     </div>                                          
                     <div class="info-block">                         
@@ -345,7 +345,7 @@
 
         <div class="media-modal" id="wrapped-modal" hidden>             
             <button class="media-modal-backdrop" id="wrapped-modal-backdrop" type="button"></button>             
-            <div class="media-modal-dialog" style="max-width: 450px;" role="dialog" aria-modal="true">                 
+            <div class="media-modal-dialog" style="max-width: 600px;" role="dialog" aria-modal="true">                 
                 <div class="media-modal-header">                     
                     <div>                         
                         <h2>Your ChatLume Wrapped</h2>                         
@@ -355,32 +355,35 @@
                         <button id="close-wrapped" type="button"><i class="ph ph-x"></i></button>                     
                     </div>                 
                 </div>                 
-                <div class="media-modal-body" style="display:block; padding: 20px; background: var(--bg-sidebar);">                     
-                    <div id="wrapped-graphic" class="wrapped-graphic-container">                         
-                        <div class="wg-header">                             
-                            <h2>ChatLume Wrapped</h2>                             
-                            <p id="wg-chat-title">Chat Name</p>                         
-                        </div>                         
-                        <div class="wg-stats">                             
-                            <div class="wg-stat-card">                                 
-                                <span>Total Messages</span>                                 
-                                <h3 id="wg-total-msgs">0</h3>                             
-                            </div>                             
-                            <div class="wg-stat-card">                                 
-                                <span>Peak Time</span>                                 
-                                <h3 id="wg-peak-time">12 PM</h3>                             
-                            </div>                         
-                        </div>                         
-                        <div class="wg-top-emojis">                             
-                            <span>Top Emojis</span>                             
-                            <div class="wg-emoji-list" id="wg-emojis"></div>                         
-                        </div>                         
-                        <div class="wg-split">                             
-                            <span>Chat Split</span>                             
-                            <div class="wg-split-bar" id="wg-split-bar"></div>                             
-                            <div class="wg-split-labels" id="wg-split-labels"></div>                         
-                        </div>                         
-                        <div class="wg-footer">Generated securely by ChatLume</div>                     
+                <div class="media-modal-body" style="display:block; padding: 20px; background: var(--bg-sidebar); overflow: auto;">
+                    <div id="wrapped-graphic" class="wrapped-graphic-container">
+                        <div class="wg-header">
+                            <div class="wg-brand-tag">ChatLume Wrapped</div>
+                            <h2>Your Chat</h2>
+                            <p>Loading...</p>
+                        </div>
+                        <div class="wg-divider"></div>
+                        <div class="wg-stats-grid">
+                            <div class="wg-stat-card"><span>Messages</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span>Words</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span>Media</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span>Peak Hour</span><h3>—</h3></div>
+                        </div>
+                        <div class="wg-section">
+                            <div class="wg-label">Most Used</div>
+                            <div class="wg-emoji-grid"></div>
+                        </div>
+                        <div class="wg-section">
+                            <div class="wg-label">Top Contributors</div>
+                            <div class="wg-split">
+                                <div class="wg-split-bar"></div>
+                                <div class="wg-split-labels"></div>
+                            </div>
+                        </div>
+                        <div class="wg-brand-footer">
+                            <div class="wg-logo"><i class="ph-fill ph-chat-teardrop-text"></i> ChatLume</div>
+                            <div class="wg-url">chatlume.parassharma.in</div>
+                        </div>
                     </div>                     
                     <button class="btn-primary" id="download-wrapped" style="width: 100%; margin-top: 20px;">                         
                         <i class="ph ph-download-simple" style="margin-right: 8px;"></i> Download Image                     
